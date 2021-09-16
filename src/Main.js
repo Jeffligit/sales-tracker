@@ -26,8 +26,6 @@ export default function Main() {
 
     // Inventory useEffect (if inventory changes)
     useEffect(() => {
-        // console.log(inventory)
-
     }, [inventory])
 
     // Sales useEffect (if sales changes)
@@ -36,7 +34,7 @@ export default function Main() {
 
     // Expenses useEffect (if expenses changes)
     useEffect(() => {
-
+        console.log(expenses)
     }, [expenses])
 
 
@@ -554,7 +552,7 @@ export default function Main() {
 
     */
     function createDataCSV() {
-        const header = 'INVENTORY PURCHASE DATE,INVENTORY PRODUCT NAME,INVENTORY PRODUCT PRICE,INVENTORY QTY,SOLD DATE,SOLD PRODUCT NAME,SOLD PAID PRICE,SOLD PRICE,SOLD PAYOUT,SOLD COST TO SHIP,SOLD PROFIT,EXPENSES PURCHASE DATE,EXPENSE PRODUCT NAME,EXPENSE PRODUCT PRICE,EXPENSE QTY\n'
+        let csv = 'INVENTORY PURCHASE DATE,INVENTORY PRODUCT NAME,INVENTORY PRODUCT PRICE,INVENTORY QTY,SOLD DATE,SOLD PRODUCT NAME,SOLD PAID PRICE,SOLD PRICE,SOLD PAYOUT,SOLD COST TO SHIP,SOLD PROFIT,EXPENSES PURCHASE DATE,EXPENSE PRODUCT NAME,EXPENSE PRODUCT PRICE,EXPENSE QTY\n'
         const inventoryLength = inventory.length
         const salesLength = sales.length
         const expensesLength = expenses.length
@@ -562,7 +560,7 @@ export default function Main() {
         const emptyInventory = ',,,,'
         const emptySale = ',,,,,,,'
         const emptyExpense = ',,,\n'
-        let csv = header
+        
         for (let i = 1; i < max; i++) {
             let row = ""
 
@@ -588,6 +586,7 @@ export default function Main() {
 
         return csv.substring(0,csv.length-1)
     }
+    
 
     /* 
         Description: Reads a CSV file of the correct format and puts
@@ -596,15 +595,39 @@ export default function Main() {
 
     function readDataCSV(csvFile) {
         const reader = new FileReader()
-        console.log(csvFile)
-        reader.onload = function() {
+        
+        reader.onload = async function() {
             // process the content
-
-            let rows = reader.result.split('\n')
+            console.log('clearing table')
+            // clear the table
+            // setInventory(inventoryHeader)
+            // setSales(salesHeader)
+            // setExpenses(expensesHeader)
+            var newInventory = inventoryHeader;
+            var newSales = salesHeader;
+            var newExpenses = expensesHeader;
             
+            // extract each row
+            let rows = reader.result.split('\n')
             for (let i = 1; i < rows.length; i++) {
+                // get items from each row separated by comma
+                let items = rows[i].split(',');
+                if (items[0] != '') {
+                    newInventory.push([i, items[0], items[1], items[2], items[3]])
+                }
 
+                if (items[4] != '') {
+                    newSales.push([i, items[4], items[5], items[6], items[7], items[8], items[9], items[10]])
+                }
+
+                if (items[11] != '') {
+                    newExpenses.push([i, items[11], items[12], items[13], items[14]])
+                }
             }
+
+            setInventory(newInventory)
+            setSales(newSales)
+            setExpenses(newExpenses)
         }
         reader.readAsText(csvFile)
     }
@@ -618,18 +641,128 @@ export default function Main() {
             return
         }
 
-        const pattern = /[0-9]/
+        // const pattern = /[0-9]/
 
-        if (!pattern.test(row[2]) || !pattern.test(row[3])) {
-            return
-        }
-
+        // if (!pattern.test(row[2]) || !pattern.test(row[3])) {
+        //     return
+        // }
         addProduct(true, row[0], row[1], row[2], row[3])
+        console.log('added inventory')
     }
 
     function addSalesFromRow(row) {
+        if (!verifyDateFormat(row[4])) {
+            return;
+        }
 
-        
+        if (row[5] === '' || row[6] === '' || row[7] === '' || row[8] === '' || row[9] === '' || row[10] === '') {
+            return
+        }
+
+        let newSales = Array(sales.length + 1);
+        let date = row[4];
+        let productName = row[5];
+        let pricePaid = row[6];
+        let price = row[7];
+        let payout = row[8];
+        let cost = row[9];
+        let profit = row[10];
+
+        newSales[0] = sales[0]
+        if (sales.length === 1) {
+            // append to newSales
+            newSales[sales.length] = [sales.length.toString(), date, productName, pricePaid, price, payout, cost, profit]
+        } else {
+            let hasAdded = false
+            let newSaleDate = date.split('/')
+
+            for (let i = 1; i < sales.length; i++) {
+                let currSaleDate = sales[i][1].split('/')
+
+                // If the new sale's year is greater than current sale in sales
+                if (newSaleDate[2] > currSaleDate[2]) {
+                    newSales[i] = [i.toString(), date, productName, pricePaid, price, payout, cost, profit]
+
+                    for (i; i < sales.length; i++) {
+                        newSales[i + 1] = sales[i]
+                        newSales[i + 1][0] = (i + 1).toString()
+                    }
+
+                    hasAdded = true
+
+                    // if the years are the same
+                } else if (newSaleDate[2] === currSaleDate[2]) {
+                    // check month
+
+                    // If the new sale's month is greater than current sale in inventory
+                    if (newSaleDate[0] > currSaleDate[0]) {
+
+                        // New sale is more recent
+                        newSales[i] = [i.toString(), date, productName, pricePaid, price, payout, cost, profit]
+
+                        for (i; i < sales.length; i++) {
+                            newSales[i + 1] = sales[i]
+                            newSales[i + 1][0] = (i + 1).toString()
+                        }
+
+                        hasAdded = true
+
+                    } else if (newSaleDate[0] === currSaleDate[0]) {
+                        // check day
+
+                        if (newSaleDate[1] > currSaleDate[1]) {
+                            // New sale is more recent
+                            newSales[i] = [i.toString(), date, productName, pricePaid, price, payout, cost, profit]
+
+                            for (i; i < sales.length; i++) {
+                                newSales[i + 1] = sales[i]
+                                newSales[i + 1][0] = (i + 1).toString()
+                            }
+
+                            hasAdded = true
+
+                        } else if (newSaleDate[1] === currSaleDate[1]) {
+                            // order by product name
+
+                            if (productName < sales[i][2]) {
+                                newSales[i] = [i.toString(), date, productName, pricePaid, price, payout, cost, profit]
+
+                                for (i; i < sales.length; i++) {
+                                    newSales[i + 1] = sales[i]
+                                    newSales[i + 1][0] = (i + 1).toString()
+                                }
+
+                                hasAdded = true
+
+                            } else {
+
+                                newSales[i] = sales[i]
+                            }
+
+                        } else {
+                            newSales[i] = sales[i]
+                        }
+
+                    } else {
+                        // New item is older than current item in inventory
+                        newSales[i] = sales[i]
+                    }
+
+                } else {
+                    // curr item in inventory was purchased earlier than new item
+                    // simply add to new list
+
+                    newSales[i] = sales[i]
+                }
+            }
+
+            if (!hasAdded) {
+                newSales[sales.length] = [sales.length.toString(), date, productName, pricePaid, price, payout, cost, profit]
+            }
+        }
+
+        setSales(newSales)
+
     }
 
     function addExpenseFromRow(row) {
@@ -641,11 +774,11 @@ export default function Main() {
             return
         }
 
-        const pattern = /[0-9]/
+        // const pattern = /[0-9]/
 
-        if (!pattern.test(row[13]) || !pattern.test(row[14])) {
-            return
-        }
+        // if (!pattern.test(row[13]) || !pattern.test(row[14])) {
+        //     return
+        // }
 
         addProduct(false, row[11], row[12], row[13], row[14])
     }
