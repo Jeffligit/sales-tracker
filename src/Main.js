@@ -656,7 +656,11 @@ export default function Main() {
             <Dialog open={openInfo} close={handleInfoClose}
                 maxSize='sm'
                 header='Info'
-                body={<span>Hello World</span>}>
+                body={<p>You can download the existing table as a csv. 
+                    You can then upload that same csv to repopulate the table.
+                    DO NOT ALTER THE CSV AS IT WILL NOT UPLOAD PROPERLY.
+                    AVOID USING COMMAS IN YOUR PRODUCT NAME.
+                    Will have error handling for these issues soon.</p>}>
             </Dialog>
         </div>
 
