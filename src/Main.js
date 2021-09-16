@@ -598,11 +598,6 @@ export default function Main() {
         
         reader.onload = async function() {
             // process the content
-            console.log('clearing table')
-            // clear the table
-            // setInventory(inventoryHeader)
-            // setSales(salesHeader)
-            // setExpenses(expensesHeader)
             var newInventory = inventoryHeader;
             var newSales = salesHeader;
             var newExpenses = expensesHeader;
@@ -612,15 +607,15 @@ export default function Main() {
             for (let i = 1; i < rows.length; i++) {
                 // get items from each row separated by comma
                 let items = rows[i].split(',');
-                if (items[0] != '') {
+                if (items[0] !== '') {
                     newInventory.push([i, items[0], items[1], items[2], items[3]])
                 }
 
-                if (items[4] != '') {
+                if (items[4] !== '') {
                     newSales.push([i, items[4], items[5], items[6], items[7], items[8], items[9], items[10]])
                 }
 
-                if (items[11] != '') {
+                if (items[11] !== '') {
                     newExpenses.push([i, items[11], items[12], items[13], items[14]])
                 }
             }
@@ -630,177 +625,6 @@ export default function Main() {
             setExpenses(newExpenses)
         }
         reader.readAsText(csvFile)
-    }
-
-    function addInventoryFromRow(row) {
-        if (!verifyDateFormat(row[0])) {
-            return
-        }
-
-        if (row[1] === '' || row[2] === '' || row[3] === '') {
-            return
-        }
-
-        // const pattern = /[0-9]/
-
-        // if (!pattern.test(row[2]) || !pattern.test(row[3])) {
-        //     return
-        // }
-        addProduct(true, row[0], row[1], row[2], row[3])
-        console.log('added inventory')
-    }
-
-    function addSalesFromRow(row) {
-        if (!verifyDateFormat(row[4])) {
-            return;
-        }
-
-        if (row[5] === '' || row[6] === '' || row[7] === '' || row[8] === '' || row[9] === '' || row[10] === '') {
-            return
-        }
-
-        let newSales = Array(sales.length + 1);
-        let date = row[4];
-        let productName = row[5];
-        let pricePaid = row[6];
-        let price = row[7];
-        let payout = row[8];
-        let cost = row[9];
-        let profit = row[10];
-
-        newSales[0] = sales[0]
-        if (sales.length === 1) {
-            // append to newSales
-            newSales[sales.length] = [sales.length.toString(), date, productName, pricePaid, price, payout, cost, profit]
-        } else {
-            let hasAdded = false
-            let newSaleDate = date.split('/')
-
-            for (let i = 1; i < sales.length; i++) {
-                let currSaleDate = sales[i][1].split('/')
-
-                // If the new sale's year is greater than current sale in sales
-                if (newSaleDate[2] > currSaleDate[2]) {
-                    newSales[i] = [i.toString(), date, productName, pricePaid, price, payout, cost, profit]
-
-                    for (i; i < sales.length; i++) {
-                        newSales[i + 1] = sales[i]
-                        newSales[i + 1][0] = (i + 1).toString()
-                    }
-
-                    hasAdded = true
-
-                    // if the years are the same
-                } else if (newSaleDate[2] === currSaleDate[2]) {
-                    // check month
-
-                    // If the new sale's month is greater than current sale in inventory
-                    if (newSaleDate[0] > currSaleDate[0]) {
-
-                        // New sale is more recent
-                        newSales[i] = [i.toString(), date, productName, pricePaid, price, payout, cost, profit]
-
-                        for (i; i < sales.length; i++) {
-                            newSales[i + 1] = sales[i]
-                            newSales[i + 1][0] = (i + 1).toString()
-                        }
-
-                        hasAdded = true
-
-                    } else if (newSaleDate[0] === currSaleDate[0]) {
-                        // check day
-
-                        if (newSaleDate[1] > currSaleDate[1]) {
-                            // New sale is more recent
-                            newSales[i] = [i.toString(), date, productName, pricePaid, price, payout, cost, profit]
-
-                            for (i; i < sales.length; i++) {
-                                newSales[i + 1] = sales[i]
-                                newSales[i + 1][0] = (i + 1).toString()
-                            }
-
-                            hasAdded = true
-
-                        } else if (newSaleDate[1] === currSaleDate[1]) {
-                            // order by product name
-
-                            if (productName < sales[i][2]) {
-                                newSales[i] = [i.toString(), date, productName, pricePaid, price, payout, cost, profit]
-
-                                for (i; i < sales.length; i++) {
-                                    newSales[i + 1] = sales[i]
-                                    newSales[i + 1][0] = (i + 1).toString()
-                                }
-
-                                hasAdded = true
-
-                            } else {
-
-                                newSales[i] = sales[i]
-                            }
-
-                        } else {
-                            newSales[i] = sales[i]
-                        }
-
-                    } else {
-                        // New item is older than current item in inventory
-                        newSales[i] = sales[i]
-                    }
-
-                } else {
-                    // curr item in inventory was purchased earlier than new item
-                    // simply add to new list
-
-                    newSales[i] = sales[i]
-                }
-            }
-
-            if (!hasAdded) {
-                newSales[sales.length] = [sales.length.toString(), date, productName, pricePaid, price, payout, cost, profit]
-            }
-        }
-
-        setSales(newSales)
-
-    }
-
-    function addExpenseFromRow(row) {
-        if (!verifyDateFormat(row[11])) {
-            return
-        }
-
-        if (row[12] === '' || row[13] === '' || row[14] === '') {
-            return
-        }
-
-        // const pattern = /[0-9]/
-
-        // if (!pattern.test(row[13]) || !pattern.test(row[14])) {
-        //     return
-        // }
-
-        addProduct(false, row[11], row[12], row[13], row[14])
-    }
-
-    // does not verify whether it is a valid date
-    function verifyDateFormat(date) {
-        if (date === 'Unknown') {
-            return true
-        }
-        if (date.length < 10) {
-            return false
-        }
-
-        const pattern = /[0-9]/
-        const month = date.substring(0,2)
-        const day = date.substring(3,5)
-        const year = date.substring(6)
-        if (pattern.test(month) && pattern.test(day) && pattern.test(year) && date[2] === '/' && date[5] === '/') {
-            return true
-        }
-
-        return false
     }
 
     function handleInfoOpen() {
