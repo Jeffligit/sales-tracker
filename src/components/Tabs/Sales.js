@@ -1,6 +1,4 @@
 import React from 'react'
-import Navbar from 'react-bootstrap/Navbar'
-import Nav from 'react-bootstrap/Nav'
 // import AddBtn from '../AddBtn'
 import '../../App.css'
 import ContentTable from '../ContentTable'
@@ -62,19 +60,6 @@ export default function Sales(props) {
 
     return ( 
         <div>
-            {/* This is the bar that contains buttons to change table */}
-            <Navbar bg='white' >
-                {/* This is for listing the buttons/user functionality */}
-                <Nav>
-                    {/* <Nav.Item className='Nav-item'>
-                        <AddBtn />
-                    </Nav.Item> */}
-                </Nav>
-                {/* This is for when it was last updated */}
-                <Navbar.Collapse >
-                </Navbar.Collapse>
-            </Navbar>
-            {/* This is the table for users to see their inventory */}
             <ContentTable header={headerRow} body={bodyRows}/>
         </div>
 
