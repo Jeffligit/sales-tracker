@@ -1,3 +1,8 @@
+# Sales tracker
+Keep track of what you're buying and selling. As well as expense purchases made to make the sale.
+
+https://sales-tracker-beta.vercel.app/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
