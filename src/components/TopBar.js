@@ -46,11 +46,7 @@ export default function TopBar(props) {
         element.accept = ".csv"
         element.onchange = (evt) => {props.read(evt.target.files[0])}
         element.click()
-        console.log('uploading')
     }
-
-    
-
 
     return (
         <div className={classes.grow}>

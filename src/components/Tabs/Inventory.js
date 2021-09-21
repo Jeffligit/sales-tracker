@@ -71,7 +71,7 @@ export default function Inventory(props) {
     const [productNameError, setProductNameError] = useState(false)
     const [priceError, setPriceError] = useState(false)
     const [quantityError, setQuantityError] = useState(false)
-
+    
     
     // states for sold dialog
     const [soldOpen, setSoldOpen] = useState(false)

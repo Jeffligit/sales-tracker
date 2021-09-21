@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Table from 'react-bootstrap/Table'
 import { makeStyles } from '@material-ui/core'
 
@@ -14,6 +14,12 @@ export default function ContentTable(props) {
 
     const classes = useStyles()
 
+    const [body, setBody] = useState(props.body)
+
+    useEffect(() => {
+        setBody(props.body)
+    }, [props.body])
+
     return (
         <div className={classes.root}>
             <Table striped bordered hover >
@@ -23,7 +29,7 @@ export default function ContentTable(props) {
                     </tr>
                 </thead>
                 <tbody>
-                    {props.body}
+                    {body}
                 </tbody>
             </Table>
         </div>

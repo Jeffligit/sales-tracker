@@ -6,6 +6,7 @@ import Sales from './components/Tabs/Sales'
 import Expense from './components/Tabs/Expense'
 import TopBar from './components/TopBar'
 import Dialog from './components/Dialog'
+import InventorySalesExpenseInfo from './components/InventorySalesExpenseInfo'
 
 
 
@@ -20,12 +21,18 @@ export default function Main() {
     const [inventory, setInventory] = useState(inventoryHeader)
     const [sales, setSales] = useState(salesHeader)
     const [expenses, setExpenses] = useState(expensesHeader)
-    
-
+    // used to rerender when uploading a csv
+    const [uploaded, setUploaded] = useState(false)
     const [openInfo, setOpenInfo] = useState(false)
 
+    //const [inventoryTotal, setInventoryTotal] = useState(0)
+
+    const [inventoryTotal, setInventoryTotal] = useState(0)
+    const [profitTotal, setProfitTotal] = useState(0)
+    const [expenseTotal, setExpenseTotal] = useState(0)
     // Inventory useEffect (if inventory changes)
     useEffect(() => {
+        
     }, [inventory])
 
     // Sales useEffect (if sales changes)
@@ -34,9 +41,26 @@ export default function Main() {
 
     // Expenses useEffect (if expenses changes)
     useEffect(() => {
-        console.log(expenses)
     }, [expenses])
 
+
+    useEffect(() => {
+        var total = 0
+        for (let i = 1; i < inventory.length; i++) {
+            total += parseFloat(inventory[i][3]) * parseInt(inventory[i][4])
+        }
+        setInventoryTotal(total)
+        total = 0
+        for (let i = 1; i < sales.length; i++) {
+            total += parseFloat(sales[i][7])
+        }
+        setProfitTotal(total)
+        total = 0
+        for (let i = 1; i < inventory.length; i++) {
+            total += parseFloat(expenses[i][3]) * parseInt(expenses[i][4])
+        }
+        setExpenseTotal(total)
+    }, [uploaded, inventory, sales, expenses])
 
     /*
         Description: Handle switching tabs
@@ -326,6 +350,8 @@ export default function Main() {
 
         if (isInventory) {
             setInventory(newList)
+            let total = inventoryTotal + price * quantity
+            setInventoryTotal(total)
         } else {
             setExpenses(newList)
         }
@@ -596,7 +622,7 @@ export default function Main() {
     function readDataCSV(csvFile) {
         const reader = new FileReader()
         
-        reader.onload = async function() {
+        reader.onload = function() {
             // process the content
             var newInventory = inventoryHeader;
             var newSales = salesHeader;
@@ -623,9 +649,11 @@ export default function Main() {
             setInventory(newInventory)
             setSales(newSales)
             setExpenses(newExpenses)
+            setUploaded(true)
         }
         reader.readAsText(csvFile)
     }
+
 
     function handleInfoOpen() {
         setOpenInfo(true)
@@ -636,8 +664,13 @@ export default function Main() {
     }
 
     return (
-        <div>
+        <div >
             <TopBar infoOpen={handleInfoOpen} data={createDataCSV} read={readDataCSV}/>
+            <InventorySalesExpenseInfo 
+                inventoryTotal={inventoryTotal}
+                profitTotal={profitTotal}
+                expenseTotal={expenseTotal}
+            />
             <Tabs
                 id='tabs'
                 activeKey={tab}
