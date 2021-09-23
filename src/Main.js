@@ -6,7 +6,7 @@ import Sales from './components/Tabs/Sales'
 import Expense from './components/Tabs/Expense'
 import TopBar from './components/TopBar'
 import Dialog from './components/Dialog'
-import InventorySalesExpenseInfo from './components/InventorySalesExpenseInfo'
+import InventorySalesExpenseInfo from './components/InfoSection/InventorySalesExpenseInfo'
 
 
 
@@ -56,7 +56,7 @@ export default function Main() {
         }
         setProfitTotal(total)
         total = 0
-        for (let i = 1; i < inventory.length; i++) {
+        for (let i = 1; i < expenses.length; i++) {
             total += parseFloat(expenses[i][3]) * parseInt(expenses[i][4])
         }
         setExpenseTotal(total)
@@ -670,6 +670,9 @@ export default function Main() {
                 inventoryTotal={inventoryTotal}
                 profitTotal={profitTotal}
                 expenseTotal={expenseTotal}
+                inventory={inventory}
+                expenses={expenses}
+                sales={sales}
             />
             <Tabs
                 id='tabs'

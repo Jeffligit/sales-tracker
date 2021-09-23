@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import AddBtn from '../AddBtn'
 import '../../App.css'
-import ContentTable from '../ContentTable'
+import ContentTable from './ContentTable'
 import {
     makeStyles,
     TextField,
