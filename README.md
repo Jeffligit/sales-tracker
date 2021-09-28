@@ -1,7 +1,7 @@
 # Sales tracker
 Keep track of what you're buying and selling. As well as expense purchases made to make the sale.
 
-https://sales-tracker-beta.vercel.app/
+https://sales-tracker-three.vercel.app/
 
 # Getting Started with Create React App
 
