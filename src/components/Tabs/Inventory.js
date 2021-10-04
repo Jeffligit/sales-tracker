@@ -287,8 +287,7 @@ export default function Inventory(props) {
     }
 
     async function edit() {
-        await props.removeInventory(itemNumberBeingEdited)
-        props.addNewInventory(date, productName, price, quantity)
+        props.editInventory(itemNumberBeingEdited, date, productName, price, quantity)
         handleCloseAddNewItemDialog()
     }
 

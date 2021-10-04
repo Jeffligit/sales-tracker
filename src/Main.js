@@ -176,6 +176,12 @@ export default function Main() {
         setInventory(removeItemFromList(itemNumber, inventory));
     }
 
+    function editInventoryProduct(itemNumber, date, name, price, quantity) {
+        let newItem = new InventoryItem(date, name, price, quantity);
+        let newList = removeItemFromList(itemNumber, inventory);
+        setInventory(addItemToOldList(newItem, newList));
+    }
+
     // EXPENSE FUNCTIONS
 
     function addExpenseProduct(date, name, price, quantity) {
@@ -227,12 +233,8 @@ export default function Main() {
 
     }
 
-    /*
-        Description: Edits an item from expense or inventory 
-    */
-    // function editProduct(isInventory) {
-
-    // }
+    
+    
 
     //LOADING AND SAVING
 
@@ -352,6 +354,7 @@ export default function Main() {
                         removeInventory={removeInventoryProduct}
                         addNewInventory={addInventoryProduct}
                         selling={addSalesItem}
+                        editInventory={editInventoryProduct}
                         inventoryHeader={inventoryHeader}
                     />
                 </Tab>
