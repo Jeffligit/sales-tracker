@@ -43,7 +43,9 @@ export default function Sales(props) {
                 <td>{i+1}</td>
                 <td>{item.date}</td>
                 <td>{item.name}</td>
-                <td>{item.pricePaid}</td>
+                <td>{item.purchasedDate}</td>
+                <td>{item.quantitySold}</td>
+                <td>{item.pricePerQuantity}</td>
                 <td>{item.salePrice}</td>
                 <td>{item.payout}</td>
                 <td>{item.costToShip}</td>

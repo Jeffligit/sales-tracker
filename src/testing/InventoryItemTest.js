@@ -2,16 +2,17 @@ import assert from 'assert';
 import InventoryItem from '../classes/InventoryItem.js'
 
 function makeNewInventoryItem() {
-    const item = new InventoryItem("10/10/2021", "Some Item Name", 9.99, 3);
+    const item = new InventoryItem("10/10/2021", "Some Item Name", 3, 9.99);
     assert.equal(item.date, "10/10/2021", "Initializing date errored");
     assert.equal(item.name, "Some Item Name", "Initializing name errored");
-    assert.equal(item.price, 9.99, "Initializing price errored");
     assert.equal(item.quantity, 3, "Initializing quantity errored");
+    assert.equal(item.price, 9.99, "Initializing price errored");
+    
 }
 
 function testCompareDateTo() {
-    const item1 = new InventoryItem("Unknown", "Some Item Name", 9.99, 3);
-    const item2 = new InventoryItem("Unknown", "Some Item Name", 9.99, 3);
+    const item1 = new InventoryItem("Unknown", "Some Item Name", 3, 9.99);
+    const item2 = new InventoryItem("Unknown", "Some Item Name", 3, 9.99);
 
     /*
         results:
@@ -157,25 +158,25 @@ function removeItemFromList(itemNumber, oldList) {
 
 function testAddProduct() {
     var list = [];
-    list = addProduct("10/10/2021", "Some Item Name", 1, 3, list);
+    list = addProduct("10/10/2021", "Some Item Name", 3, 1, list);
     assert.equal(list[list.length - 1].price, 1, "New item was not added to empty list");
 
-    list = addProduct("5/10/2019", "Some Item Name", 2, 3, list)
+    list = addProduct("5/10/2019", "Some Item Name", 3, 2, list)
     assert.equal(list[list.length - 1].price, 2, "New oldest item was not added to end of list");
 
-    list = addProduct("10/10/2020", "Some Item Name", 1.5, 3, list)
+    list = addProduct("10/10/2020", "Some Item Name", 3, 1.5, list)
     assert.equal(list[list.length - 2].price, 1.5, "New item was not added to between an item younger and older");
 
-    list = addProduct("5/3/2019", "Some Item Name", 1.1, 3, list)
+    list = addProduct("5/3/2019", "Some Item Name", 3, 1.1, list)
     assert.equal(list[list.length - 1].price, 1.1, "New oldest item was not added to the end of list on a longer list");
     
-    list = addProduct("Unknown", "Some Item Name", 4, 3, list)
+    list = addProduct("Unknown", "Some Item Name", 3, 4, list)
     assert.equal(list[list.length - 1].price, 4, "New item with unknown date was not added to the end");
     
-    list = addProduct("3/20/2019", "Some Item Name", 5, 3, list)
+    list = addProduct("3/20/2019", "Some Item Name", 3, 5, list)
     assert.equal(list[list.length - 2].price, 5, "New oldest item was not added to between current oldest item and unknown dated item");
     
-    list = addProduct("10/22/2021", "Some Item Name", 6, 3, list);
+    list = addProduct("10/22/2021", "Some Item Name", 3, 6, list);
     assert.equal(list[0].price, 6, "New youngest item was not added to existing list");
 
     list = removeItemFromList(1, list)

@@ -1,9 +1,10 @@
 class InventoryItem {
-    constructor(date, name, price, quantity) {
+    constructor(date, name, quantity, price) {
         this.date = date;
         this.name= name;
-        this.price = price;
         this.quantity = quantity;
+        this.price = price;
+        
     }
 
 

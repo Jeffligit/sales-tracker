@@ -46,8 +46,8 @@ export default function Expense(props) {
                 <td>{i+1}</td>
                 <td>{item.date}</td>
                 <td>{item.name}</td>
-                <td>{item.price}</td>
                 <td>{item.quantity}</td>
+                <td>{item.price}</td>
                 <td key={'td-button' + i}>
                     <Button variant='danger' onClick={() => {props.removeExpense(i+1)}} className={classes.itemBtns}>
                         Remove
@@ -68,7 +68,6 @@ export default function Expense(props) {
     const [productNameError, setProductNameError] = useState(false)
     const [priceError, setPriceError] = useState(false)
     const [quantityError, setQuantityError] = useState(false)
-    // const [labels, setLabels] = useState([])
 
     function handleOpenAddNewItemDialog() {
         setNewItemOpen(true)
@@ -130,7 +129,7 @@ export default function Expense(props) {
         if (errored) {
             return
         } else {
-            props.addNewExpense(date, productName, parseFloat(price), parseInt(quantity));
+            props.addNewExpense(date, productName, parseInt(quantity), parseFloat(price));
             handleCloseAddNewItemDialog();
         }
     }
@@ -178,21 +177,6 @@ export default function Expense(props) {
                     </Grid>
                     <Grid item md={1}>
                         <Typography variant='body1'>
-                            Price*:
-                        </Typography>
-                    </Grid>
-                    <Grid item md={2}>
-                        <TextField
-                            variant='outlined'
-                            size='small'
-                            type='number'
-                            className={classes.textField}
-                            onChange={handlePriceChange}
-                            error={priceError}
-                        />
-                    </Grid>
-                    <Grid item md={1}>
-                        <Typography variant='body1'>
                             Quantity*:
                         </Typography>
                     </Grid>
@@ -204,6 +188,21 @@ export default function Expense(props) {
                             className={classes.textField}
                             onChange={handleQuantityChange}
                             error={quantityError}
+                        />
+                    </Grid>
+                    <Grid item md={1}>
+                        <Typography variant='body1'>
+                            Price*:
+                        </Typography>
+                    </Grid>
+                    <Grid item md={2}>
+                        <TextField
+                            variant='outlined'
+                            size='small'
+                            type='number'
+                            className={classes.textField}
+                            onChange={handlePriceChange}
+                            error={priceError}
                         />
                     </Grid>
                     <Grid item md={10}>

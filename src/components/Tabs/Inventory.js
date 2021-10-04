@@ -49,8 +49,8 @@ export default function Inventory(props) {
                 <td>{i+1}</td>
                 <td>{item.date}</td>
                 <td>{item.name}</td>
-                <td>{item.price}</td>
                 <td>{item.quantity}</td>
+                <td>{item.price}</td>
                 <td key={'td-button' + (i+1)}>
                     <Button variant='danger' onClick={() => {props.removeInventory(i+1)}} className={classes.itemBtns}>
                         Remove
@@ -97,6 +97,7 @@ export default function Inventory(props) {
     // states for edit dialog
     const [editOpen, setEditOpen] = useState(false)
     const [itemNumberBeingEdited, setItemNumberBeingEdited] = useState(0)
+    const [editingProductName, setEditingProductName] = useState('')
 
     // function for new item dialog
     function handleOpenAddNewItemDialog() {
@@ -147,7 +148,7 @@ export default function Inventory(props) {
         if (errored) {
             return
         } else {
-            props.addNewInventory(date, productName, parseFloat(price), parseInt(quantity))
+            props.addNewInventory(date, productName, parseInt(quantity), parseFloat(price))
             handleCloseAddNewItemDialog()
         }
     }
@@ -257,7 +258,7 @@ export default function Inventory(props) {
         if (errored) {
             return
         } else {
-            props.selling(itemNumberBeingSold, date, parseFloat(salePrice), parseFloat(totalPayout), parseFloat(costToShip), parseInt(quantitySold));
+            props.selling(itemNumberBeingSold, soldDate, parseFloat(salePrice), parseFloat(totalPayout), parseFloat(costToShip), parseInt(quantitySold));
             handleCloseSoldDialog()
         }
 
@@ -266,6 +267,7 @@ export default function Inventory(props) {
     // functions for editing dialog
 
     function handleOpenEditDialog(item, itemNumber) {
+        setEditingProductName(item.name)
         setItemNumberBeingEdited(itemNumber)
         setDate(item.date)
         setDisplayDate(reverseDate(item.date))
@@ -299,7 +301,7 @@ export default function Inventory(props) {
                 open={newItemOpen || editOpen}
                 close={handleCloseAddNewItemDialog}
                 maxSize='md'
-                header='Add a new item'
+                header={newItemOpen ? 'Add a new item' : `Editing item: ${editingProductName}` }
                 body={<form className={classes.root} autoComplete='off'>
                     <Grid container spacing={3} >
                         <Grid item xs={4} sm={3} md={2}>
@@ -334,22 +336,6 @@ export default function Inventory(props) {
                                 value={displayDate}
                             />
                         </Grid>
-                        <Grid item xs={2} sm={1} md={1}>
-                            <Typography variant='body1'>
-                                Price*:
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={4} sm={5} md={2}>
-                            <TextField
-                                variant='outlined'
-                                size='small'
-                                type='number'
-                                className={classes.textField}
-                                onChange={handlePriceChange}
-                                error={priceError}
-                                value={price}
-                            />
-                        </Grid>
                         <Grid item xs={3} sm={2} md={1}>
                             <Typography variant='body1'>
                                 Quantity*:
@@ -364,6 +350,22 @@ export default function Inventory(props) {
                                 onChange={handleQuantityChange}
                                 error={quantityError}
                                 value={quantity}
+                            />
+                        </Grid>
+                        <Grid item xs={2} sm={1} md={1}>
+                            <Typography variant='body1'>
+                                Price*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={4} sm={5} md={2}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='number'
+                                className={classes.textField}
+                                onChange={handlePriceChange}
+                                error={priceError}
+                                value={price}
                             />
                         </Grid>
                         <Grid item xs={8} sm={8} md={9}>

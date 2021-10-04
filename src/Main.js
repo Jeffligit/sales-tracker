@@ -13,11 +13,9 @@ import SalesItem from './classes/SalesItem.js'
 
 export default function Main() {
 
-    const inventoryHeader = ['#', 'Purchase Date (MM/DD/YYYY)', 'Product Name', 'Price', 'Quantity at Price', ''];
-    const salesHeader = ['#', 'Sold Date (MM/DD/YYYY)', 'Product Name', 'Price Paid', 'Sold Price', 'Payout', 'Cost to Ship', 'Profit', ''];
-    // this one has label column, a later addition
-    // const expensesHeader = Array(1).fill(['#', 'Purchase Date (MM/DD/YYYY)', 'Produce Name', 'Price', 'Label', ''])
-    const expensesHeader = ['#', 'Purchase Date (MM/DD/YYYY)', 'Product Name', 'Price', 'Quantity at Price', ''];
+    const inventoryHeader = ['#', 'Purchase Date (MM/DD/YYYY)', 'Product Name', 'Quantity', 'Price Per Quantity', ''];
+    const salesHeader = ['#', 'Sold Date (MM/DD/YYYY)', 'Product Name', 'Date Purchased', 'Quantity Sold', 'Price Per Quantity', 'Sold Price', 'Payout', 'Cost to Ship', 'Profit', ''];
+    const expensesHeader = ['#', 'Purchase Date (MM/DD/YYYY)', 'Product Name', 'Quantity', 'Price Per Quantity', ''];
     const [tab, setTab] = useState('inventory')
     const [inventory, setInventory] = useState([])
     const [sales, setSales] = useState([])
@@ -161,8 +159,8 @@ export default function Main() {
 
     // INVENTORY FUNCTIONS
 
-    function addInventoryProduct(date, name, price, quantity) {
-        const newItem = new InventoryItem(date, name, price, quantity);
+    function addInventoryProduct(date, name, quantity, price) {
+        const newItem = new InventoryItem(date, name, quantity, price);
         var newList = addItemToOldList(newItem, inventory);
         setInventory(newList);
 
@@ -176,16 +174,16 @@ export default function Main() {
         setInventory(removeItemFromList(itemNumber, inventory));
     }
 
-    function editInventoryProduct(itemNumber, date, name, price, quantity) {
-        let newItem = new InventoryItem(date, name, price, quantity);
+    function editInventoryProduct(itemNumber, date, name, quantity, price) {
+        let newItem = new InventoryItem(date, name, quantity, price);
         let newList = removeItemFromList(itemNumber, inventory);
         setInventory(addItemToOldList(newItem, newList));
     }
 
     // EXPENSE FUNCTIONS
 
-    function addExpenseProduct(date, name, price, quantity) {
-        const newItem = new ExpenseItem(date, name, price, quantity);
+    function addExpenseProduct(date, name, quantity, price) {
+        const newItem = new ExpenseItem(date, name, quantity, price);
         var newList = addItemToOldList(newItem, expenses);
         setExpenses(newList);
 
@@ -203,8 +201,7 @@ export default function Main() {
 
     function addSalesItem(itemNumber, date, salePrice, payout, costToShip, quantitySold) {
         var item = inventory[itemNumber - 1];
-        let pricePaid = quantitySold * item.price;
-        let profit = payout - costToShip - pricePaid;
+        let profit = payout - costToShip - (quantitySold * item.price);
 
         if (item.quantity - quantitySold === 0) {
             removeInventoryProduct(itemNumber);
@@ -214,11 +211,11 @@ export default function Main() {
             newInventory[itemNumber - 1] = item;
 
             setInventory(newInventory);
-            let total = inventoryTotal - pricePaid;
+            let total = inventoryTotal - (quantitySold * item.price);
             setInventoryTotal(total)
         }
 
-        var newSaleItem = new SalesItem(date, item.name, pricePaid, salePrice, payout, costToShip, profit.toFixed(2));
+        var newSaleItem = new SalesItem(date, item.name, item.date, quantitySold, item.price, salePrice, payout, costToShip, profit.toFixed(2));
         setSales(addItemToOldList(newSaleItem, sales));
 
         let total = profitTotal + profit;
@@ -230,7 +227,6 @@ export default function Main() {
         let total = profitTotal - sales[itemNumber - 1].profit;
         setProfitTotal(total);
         setSales(removeItemFromList(itemNumber, sales));
-
     }
 
     
@@ -243,13 +239,13 @@ export default function Main() {
 
     */
     function createDataCSV() {
-        let csv = 'INVENTORY PURCHASE DATE,INVENTORY PRODUCT NAME,INVENTORY PRODUCT PRICE,INVENTORY QTY,SOLD DATE,SOLD PRODUCT NAME,SOLD PAID PRICE,SOLD PRICE,SOLD PAYOUT,SOLD COST TO SHIP,SOLD PROFIT,EXPENSES PURCHASE DATE,EXPENSE PRODUCT NAME,EXPENSE PRODUCT PRICE,EXPENSE QTY\n'
+        let csv = 'INVENTORY PURCHASE DATE,INVENTORY PRODUCT NAME,INVENTORY QTY,INVENTORY PRODUCT PRICE,SOLD DATE,SOLD PRODUCT NAME,SOLD DATE PURCHASED,SOLD QUANTITY SOLD,SOLD PRICE PER QUANTITY,SOLD PRICE,SOLD PAYOUT,SOLD COST TO SHIP,SOLD PROFIT,EXPENSES PURCHASE DATE,EXPENSE PRODUCT NAME,EXPENSE PRODUCT QTY,EXPENSE PRICE\n'
         const inventoryLength = inventory.length
         const salesLength = sales.length
         const expensesLength = expenses.length
         const max = Math.max(inventoryLength, salesLength, expensesLength)
         const emptyInventory = ',,,,'
-        const emptySale = ',,,,,,,'
+        const emptySale = ',,,,,,,,,'
         const emptyExpense = ',,,\n'
 
         for (let i = 0; i < max; i++) {
@@ -257,21 +253,21 @@ export default function Main() {
 
             if (inventoryLength > i) {
                 let item = inventory[i];
-                row = row + item.date + ',' + item.name + ',' + item.price + ',' + item.quantity + ','
+                row = row + item.date + ',' + item.name + ',' + item.quantity + ',' + item.price + ','
             } else {
                 row = row + emptyInventory
             }
 
             if (salesLength > i) {
                 let item = sales[i];
-                row = row + item.date + ',' + item.name + ',' + item.pricePaid + ',' + item.salePrice + ',' + item.payout + ',' + item.costToShip + ',' + item.profit + ','
+                row = row + item.date + ',' + item.name + ',' + item.purchasedDate + ',' + item.quantitySold + ',' + item.pricePerQuantity + ',' + item.salePrice + ',' + item.payout + ',' + item.costToShip + ',' + item.profit + ','
             } else {
                 row = row + emptySale
             }
 
             if (expensesLength > i) {
                 let item = expenses[i];
-                row = row + item.date + ',' + item.name + ',' + item.price + ',' + item.quantity + '\n'
+                row = row + item.date + ',' + item.name + ',' + item.quantity + ',' + item.price + '\n'
             } else {
                 row = row + emptyExpense
             }
@@ -308,8 +304,8 @@ export default function Main() {
                     newSales.push(new SalesItem(items[4], items[5], items[6], items[7], items[8], items[9], items[10]));
                 }
 
-                if (items[11] !== '') {
-                    newExpenses.push(new ExpenseItem(items[11], items[12], items[13], items[14]));
+                if (items[13] !== '') {
+                    newExpenses.push(new ExpenseItem(items[13], items[14], items[15], items[16]));
                 }
             }
 

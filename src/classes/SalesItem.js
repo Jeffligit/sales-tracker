@@ -1,8 +1,10 @@
 class SalesItem {
-    constructor(date, name, pricePaid, salePrice, payout, costToShip, profit) {
+    constructor(date, name, purchasedDate, quantitySold, pricePerQuantity, salePrice, payout, costToShip, profit) {
         this.date = date;
         this.name= name;
-        this.pricePaid = pricePaid;
+        this.purchasedDate = purchasedDate;
+        this.quantitySold = quantitySold
+        this.pricePerQuantity = pricePerQuantity;
         this.salePrice = salePrice;
         this.payout = payout;
         this.costToShip = costToShip;
