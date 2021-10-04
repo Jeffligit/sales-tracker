@@ -67,4 +67,4 @@ class ExpenseItem {
     }
 }
 
-module.exports = ExpenseItem;
+export default ExpenseItem;

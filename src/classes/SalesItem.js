@@ -70,4 +70,4 @@ class SalesItem {
     }
 }
 
-module.exports = SalesItem;
+export default SalesItem;

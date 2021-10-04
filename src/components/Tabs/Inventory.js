@@ -13,7 +13,6 @@ import Button from 'react-bootstrap/esm/Button'
 import Dialog from '../Dialog'
 import { BiEdit } from "react-icons/bi";
 
-var InventoryItem = require('../../classes/InventoryItem')
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -82,9 +81,9 @@ export default function Inventory(props) {
 
     // states for sold dialog
     const [soldOpen, setSoldOpen] = useState(false)
-    const [itemBeingSold, setItemBeingSold] = useState(new InventoryItem())
     const [itemNumberBeingSold, setItemNumberBeingSold] = useState(0)
     const [salePrice, setSalePrice] = useState('')
+    const [soldDate, setSoldDate] = useState('')
     const [quantitySold, setQuantitySold] = useState('')
     const [totalPayout, setTotalPayout] = useState('')
     const [costToShip, setCostToShip] = useState('')
@@ -92,6 +91,8 @@ export default function Inventory(props) {
     const [quantitySoldError, setQuantitySoldError] = useState(false)
     const [totalPayoutError, setTotalPayoutError] = useState(false)
     const [costToShipError, setCostToShipError] = useState(false)
+    const [soldDateError, setSoldDateError] = useState(false)
+    
 
     // states for edit dialog
     const [editOpen, setEditOpen] = useState(false)
@@ -151,7 +152,6 @@ export default function Inventory(props) {
         }
     }
 
-    // this function is used in both new item dialog and sold dialog
     function handleDateChange(event) {
         let stringDate = event.target.value.split('-')
 
@@ -165,24 +165,45 @@ export default function Inventory(props) {
         setDisplayDate(reverseDate(revisedDate))
     }
 
-    // functions regarding sold dialog
+    function handleSoldDateChange(event) {
+        let stringDate = event.target.value.split('-')
 
+        let revisedDate = stringDate[1] + '/' + stringDate[2] + '/' + stringDate[0]
+
+        if (stringDate[1] === undefined) {
+            setSoldDate('Unknown')
+            return
+        }
+        setSoldDate(revisedDate)
+    }
+
+
+    // functions regarding sold dialog
     function handleOpenSoldDialog(item, itemNumber) {
-        setItemBeingSold(item)
+        setProductName(item.name)
+        setDate(item.date)
+        setPrice(item.price)
+        setQuantity(item.quantity)
         setItemNumberBeingSold(itemNumber)
         setSoldOpen(true)
     }
 
     function handleCloseSoldDialog() {
+        setProductName('')
+        setDate('')
+        setPrice('')
+        setQuantity('')
+
         setSalePrice('')
         setQuantitySold('')
         setTotalPayout('')
         setCostToShip('')
+        setSoldDate('')
+        
         setSalePriceError(false)
         setQuantitySoldError(false)
         setTotalPayoutError(false)
         setCostToShipError(false)
-        setItemBeingSold(new InventoryItem())
         setItemNumberBeingSold(0)
         setSoldOpen(false)
     }
@@ -213,7 +234,7 @@ export default function Inventory(props) {
         if (quantitySold === '') {
             setQuantitySoldError(true)
             errored = true
-        } else if (parseInt(quantitySold) <= 0 || parseInt(quantitySold) > itemBeingSold.quantity) {
+        } else if (parseInt(quantitySold) <= 0 || parseInt(quantitySold) > quantity) {
             setQuantitySoldError(true)
             errored = true
         }
@@ -228,10 +249,15 @@ export default function Inventory(props) {
             errored = true
         }
 
+        if (soldDate === '' || soldDate === 'Unknown') {
+            setSoldDateError(true)
+            errored = true
+        }
+
         if (errored) {
             return
         } else {
-            props.selling(itemNumberBeingSold, date, salePrice, totalPayout, costToShip, quantitySold);
+            props.selling(itemNumberBeingSold, date, parseFloat(salePrice), parseFloat(totalPayout), parseFloat(costToShip), parseInt(quantitySold));
             handleCloseSoldDialog()
         }
 
@@ -364,32 +390,32 @@ export default function Inventory(props) {
                 open={soldOpen}
                 close={handleCloseSoldDialog}
                 maxSize='md'
-                header={`You sold ${itemBeingSold.name}`}
+                header={`You sold ${productName}`}
                 body={<form className={classes.root} autoComplete='off'>
                     <Grid container spacing={3}>
                         <Grid item xs={5} sm={3} md={2}>
                             <Typography variant='body1' >Product Name: </Typography>
                         </Grid>
                         <Grid item xs={7} sm={9} md={10}>
-                            <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold.name}</Typography>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{productName}</Typography>
                         </Grid>
                         <Grid item xs={5} sm={3} md={2}>
                             <Typography variant='body1'>Purchased Date: </Typography>
                         </Grid>
                         <Grid item xs={7} sm={2} md={2}>
-                            <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold.date}</Typography>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{date}</Typography>
                         </Grid>
                         <Grid item xs={4} sm={2} md={2}>
                             <Typography variant='body1'>Price Paid: </Typography>
                         </Grid>
                         <Grid item xs={8} sm={1} md={1}>
-                            <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold.price}</Typography>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{price}</Typography>
                         </Grid>
                         <Grid item xs={3} sm={2} md={2}>
                             <Typography variant='body1'>Quantity: </Typography>
                         </Grid>
                         <Grid item xs={9} sm={1} md={3}>
-                            <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold.quantity}</Typography>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{quantity}</Typography>
                         </Grid>
 
                         <Grid item xs={5} sm={3} md={2}>
@@ -452,7 +478,8 @@ export default function Inventory(props) {
                                 size='small'
                                 type='date'
                                 className={classes.textField}
-                                onChange={handleDateChange}
+                                onChange={handleSoldDateChange}
+                                error={soldDateError}
                             />
                         </Grid>
                         <Grid item xs={5} sm={3} md={2}>

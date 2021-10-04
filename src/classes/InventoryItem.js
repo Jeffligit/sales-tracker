@@ -72,4 +72,4 @@ class InventoryItem {
 
 }
 
-module.exports = InventoryItem;
+export default InventoryItem;

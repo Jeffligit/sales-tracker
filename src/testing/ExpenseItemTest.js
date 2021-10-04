@@ -1,5 +1,5 @@
-var assert = require('assert');
-var ExpenseItem = require('../classes/ExpenseItem.js')
+import assert from 'assert'
+import ExpenseItem from '../classes/ExpenseItem.js'
 
 function makeNewExpenseItem() {
     const item = new ExpenseItem("10/10/2021", "Some Item Name", 9.99, 3);

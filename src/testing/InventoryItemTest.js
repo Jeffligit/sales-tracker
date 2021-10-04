@@ -1,5 +1,5 @@
-var assert = require('assert');
-var InventoryItem = require('../classes/InventoryItem.js')
+import assert from 'assert';
+import InventoryItem from '../classes/InventoryItem.js'
 
 function makeNewInventoryItem() {
     const item = new InventoryItem("10/10/2021", "Some Item Name", 9.99, 3);

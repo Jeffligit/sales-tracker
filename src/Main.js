@@ -7,10 +7,9 @@ import Expense from './components/Tabs/Expense'
 import TopBar from './components/TopBar'
 import Dialog from './components/Dialog'
 import InventorySalesExpenseInfo from './components/InfoSection/InventorySalesExpenseInfo'
-
-var InventoryItem = require('./classes/InventoryItem.js')
-var ExpenseItem = require('./classes/ExpenseItem.js')
-var SalesItem = require('./classes/SalesItem.js')
+import InventoryItem from './classes/InventoryItem.js'
+import ExpenseItem from './classes/ExpenseItem.js'
+import SalesItem from './classes/SalesItem.js'
 
 export default function Main() {
 
@@ -195,7 +194,7 @@ export default function Main() {
     }
 
     // SALES FUNCTIONS
-    
+
     function addSalesItem(itemNumber, date, salePrice, payout, costToShip, quantitySold) {
         var item = inventory[itemNumber - 1];
         let pricePaid = quantitySold * item.price;
@@ -236,7 +235,6 @@ export default function Main() {
     // }
 
     //LOADING AND SAVING
-
 
     /*
         Description: Creates a CSV file will sales data for download
