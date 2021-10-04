@@ -75,6 +75,7 @@ export default function Main() {
         setTab(switchedTab)
     }
 
+    // GENERAL LIST OPERATION
 
     function addItemToOldList(newItem, oldList) {
         if (oldList.length === 0) {
@@ -159,6 +160,8 @@ export default function Main() {
         return (newList.concat(oldList.slice(itemNumber)));
     }
 
+    // INVENTORY FUNCTIONS
+
     function addInventoryProduct(date, name, price, quantity) {
         const newItem = new InventoryItem(date, name, price, quantity);
         var newList = addItemToOldList(newItem, inventory);
@@ -173,6 +176,8 @@ export default function Main() {
         setInventoryTotal(total);
         setInventory(removeItemFromList(itemNumber, inventory));
     }
+
+    // EXPENSE FUNCTIONS
 
     function addExpenseProduct(date, name, price, quantity) {
         const newItem = new ExpenseItem(date, name, price, quantity);
@@ -189,6 +194,8 @@ export default function Main() {
         setExpenses(removeItemFromList(itemNumber, expenses));
     }
 
+    // SALES FUNCTIONS
+    
     function addSalesItem(itemNumber, date, salePrice, payout, costToShip, quantitySold) {
         var item = inventory[itemNumber - 1];
         let pricePaid = quantitySold * item.price;
@@ -227,6 +234,8 @@ export default function Main() {
     // function editProduct(isInventory) {
 
     // }
+
+    //LOADING AND SAVING
 
 
     /*
