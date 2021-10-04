@@ -31,15 +31,15 @@ export default function InventorySalesExpenseInfo(props) {
     const [expenseTitle, setExpensesTitle]= useState(`Expenses Total Cost: ${props.expenseTotal}`)
 
     useEffect(() => {
-        setInventoryTitle(`Inventory Total Cost: ${props.inventoryTotal}`)
+        setInventoryTitle(`Inventory Value: ${props.inventoryTotal}`)
     }, [props.inventoryTotal])
 
     useEffect(() => {
-        setProfitTitle(`Profit Total Cost: ${props.profitTotal}`)
+        setProfitTitle(`Total Lifetime Profit: ${props.profitTotal}`)
     }, [props.profitTotal])
 
     useEffect(() => {
-        setExpensesTitle(`Expenses Total Cost: ${props.expenseTotal}`)
+        setExpensesTitle(`Total Lifetime Expenses: ${props.expenseTotal}`)
     }, [props.expenseTotal])
 
     const inventoryInfo = <InventoryInfo inventory={props.inventory}/>
@@ -58,9 +58,7 @@ export default function InventorySalesExpenseInfo(props) {
                 <Grid item className={classes.infoCardRight} md={3} sm={3} xs={3}> 
                     <InfoCard title={expenseTitle} content={expensesInfo}/>
                 </Grid>
-                
             </Grid>
-
         </div>
     )
 }

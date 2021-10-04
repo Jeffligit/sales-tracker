@@ -36,26 +36,28 @@ const useStyle = makeStyles((theme) => ({
 export default function Expense(props) {
     const classes = useStyle()
 
-    const headerRow = props.currExpense !== null && props.currExpense !== undefined ? (props.currExpense[0].map((colTitle, i) => {
+    const headerRow = (props.expensesHeader.map((colTitle, i) => {
         return <th key={i}>{colTitle === '' ? <AddBtn btnFunc={handleOpenAddNewItemDialog} /> : colTitle}</th>
-    })) : <></>
+    }))
 
-    const bodyRows = props.currExpense !== null && props.currExpense !== undefined ? (props.currExpense.map((row, i) => {
-        if (i !== 0) {
-            let item = Array(5)
-            return <tr key={'tr-' + i}>{props.currExpense[i].map((content, j) => {
-                item[j] = content
-                return <td key={'td-' + j}>{content}</td>
-            })}
-                <td>
-                    <Button variant='danger' onClick={() => { props.removeExpense(parseInt(item[0])) }} className={classes.itemBtns}>
+    const bodyRows = props.currExpense !== null && props.currExpense !== undefined ? (props.currExpense.map((item, i) => {
+        return (
+            <tr key={'tr-item' + (i + 1)}>
+                <td>{i+1}</td>
+                <td>{item.date}</td>
+                <td>{item.name}</td>
+                <td>{item.price}</td>
+                <td>{item.quantity}</td>
+                <td key={'td-button' + i}>
+                    <Button variant='danger' onClick={() => {props.removeExpense(i+1)}} className={classes.itemBtns}>
                         Remove
                     </Button>
+                    {/* <IconButton onClick={() => handleOpenEditDialog(item, i+1)}>
+                        <BiEdit/>
+                    </IconButton> */}
                 </td>
             </tr>
-        } else {
-            return <React.Fragment key={'empty-'+i}></React.Fragment>
-        }
+        )
     })) : <React.Fragment key={'empty'}></React.Fragment>
 
     const [newItemOpen, setNewItemOpen] = useState(false)
@@ -128,7 +130,8 @@ export default function Expense(props) {
         if (errored) {
             return
         } else {
-            props.addNewExpense(false, date, productName, price, quantity)
+            props.addNewExpense(date, productName, parseFloat(price), parseInt(quantity));
+            handleCloseAddNewItemDialog();
         }
     }
 

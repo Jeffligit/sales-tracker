@@ -1,5 +1,4 @@
 import React from 'react'
-// import AddBtn from '../AddBtn'
 import '../../App.css'
 import ContentTable from './ContentTable'
 import {
@@ -35,27 +34,28 @@ const useStyle = makeStyles((theme) => ({
 export default function Sales(props) {
     const classes = useStyle()
 
-    const headerRow = props.currSales !== null &&  props.currSales !== undefined ? (props.currSales[0].map((colTitle, i) => {
+    const headerRow = (props.salesHeader.map((colTitle, i) => {
         return <th key={i}>{colTitle}</th>
-    })) : <></>
+    }))
 
-    const bodyRows = props.currSales !== null && props.currSales !== undefined ? (props.currSales.map((row, i) => {
-        if (i !== 0) {
-            let item = Array(8)
-            return <tr key={'tr-' + i}>{props.currSales[i].map((content, j) => {
-                item[j] = content
-                return <td key={'td-' + j}>{content}</td>
-            })}
-                <td>
-                    <Button variant='danger' onClick={() => { props.removeSale(parseInt(item[0])) }} className={classes.itemBtns}>
+    const bodyRows = props.currSales !== null && props.currSales !== undefined ? (props.currSales.map((item, i) => {
+        return (
+            <tr key={'tr-item'+(i+1)}>
+                <td>{i+1}</td>
+                <td>{item.date}</td>
+                <td>{item.name}</td>
+                <td>{item.pricePaid}</td>
+                <td>{item.salePrice}</td>
+                <td>{item.payout}</td>
+                <td>{item.costToShip}</td>
+                <td>{item.profit}</td>
+                <td key={'td-button' + (i+1)}>
+                    <Button variant='danger' onClick={() => {props.removeSale(i+1)}} className={classes.itemBtns}>
                         Remove
                     </Button>
                 </td>
-
             </tr>
-        } else {
-            return <React.Fragment key={'empty-'+i}></React.Fragment>
-        }
+        )
     })) : <React.Fragment key={'empty'}></React.Fragment>
 
     return ( 

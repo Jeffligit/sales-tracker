@@ -21,9 +21,6 @@ export default function InventoryInfo(props) {
     useEffect(() => {
         const newInventory = props.inventory
         setInventory(newInventory)
-
-
-
     }, [props.inventory])
 
 
@@ -47,11 +44,11 @@ export default function InventoryInfo(props) {
             var total = 0;
             var uniqueItems = 0;
             var itemQuantity = 0;
-            for (let i = 1; i < inventory.length; i++) {
-                if ((inventory[i][1]).split('/')[2] === year) {
-                    total += parseFloat(inventory[i][3]) * parseInt(inventory[i][4])
+            for (let i = 0; i < inventory.length; i++) {
+                if ((inventory[i].date).split('/')[2] === year) {
+                    total += parseFloat(inventory[i].price) * parseInt(inventory[i].quantity)
                     uniqueItems += 1
-                    itemQuantity += parseInt(inventory[i][4])
+                    itemQuantity += parseInt(inventory[i].quantity)
                 }
             }
             setSearchYear(year)

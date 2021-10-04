@@ -41,11 +41,11 @@ export default function ExpenseInfo(props) {
             var total = 0;
             var uniqueItems = 0;
             var itemQuantity = 0;
-            for (let i = 1; i < expenses.length; i++) {
-                if ((expenses[i][1]).split('/')[2] === year) {
-                    total += parseFloat(expenses[i][3]) * parseInt(expenses[i][4])
+            for (let i = 0; i < expenses.length; i++) {
+                if ((expenses[i].date).split('/')[2] === year) {
+                    total += parseFloat(expenses[i].price) * parseInt(expenses[i].quantity)
                     uniqueItems += 1
-                    itemQuantity += parseInt(expenses[i][4])
+                    itemQuantity += parseInt(expenses[i].quantity)
                 }
             }
             setSearchYear(year)

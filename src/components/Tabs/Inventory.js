@@ -6,10 +6,14 @@ import {
     makeStyles,
     TextField,
     Grid,
-    Typography
+    Typography,
+    IconButton
 } from '@material-ui/core'
 import Button from 'react-bootstrap/esm/Button'
 import Dialog from '../Dialog'
+import { BiEdit } from "react-icons/bi";
+
+var InventoryItem = require('../../classes/InventoryItem')
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -36,29 +40,31 @@ export default function Inventory(props) {
 
     const classes = useStyle()
 
-    const headerRow = props.currInventory !== null && props.currInventory !== undefined ? (props.currInventory[0].map((colTitle, i) => {
-        return <th key={'th'+ i}>{colTitle === '' ? <AddBtn btnFunc={handleOpenAddNewItemDialog}/> : colTitle}</th>
-    })) : <></>
+    const headerRow = (props.inventoryHeader.map((colTitle, i) => {
+        return <th key={'th' + i}>{colTitle === '' ? <AddBtn btnFunc={handleOpenAddNewItemDialog} /> : colTitle}</th>
+    }))
 
-    const bodyRows = props.currInventory !== null && props.currInventory !== undefined ? (props.currInventory.map((row, i) => {
-        if (i !== 0) {
-            let item = Array(5)
-            return <tr key={'tr-' + i}>{props.currInventory[i].map((content, j) => {
-                item[j] = content
-                return <td key={'td-' + j}>{content}</td>
-            })}
-                <td key={'td-button' + i}>
-                    <Button variant='danger' onClick={() => { props.removeInventory(parseInt(item[0])) }} className={classes.itemBtns}>
+    const bodyRows = props.currInventory !== null && props.currInventory !== undefined ? (props.currInventory.map((item, i) => {
+        return (
+            <tr key={'tr-item' + (i+1)} >
+                <td>{i+1}</td>
+                <td>{item.date}</td>
+                <td>{item.name}</td>
+                <td>{item.price}</td>
+                <td>{item.quantity}</td>
+                <td key={'td-button' + (i+1)}>
+                    <Button variant='danger' onClick={() => {props.removeInventory(i+1)}} className={classes.itemBtns}>
                         Remove
                     </Button>
-                    <Button variant='success' onClick={() => handleOpenSoldDialog(item)}>
+                    <Button variant='success' onClick={() => handleOpenSoldDialog(item, i+1)}>
                         Sold
                     </Button>
+                    <IconButton onClick={() => handleOpenEditDialog(item, i+1)}>
+                        <BiEdit/>
+                    </IconButton>
                 </td>
             </tr>
-        } else {
-            return <React.Fragment key={'empty-'+i}></React.Fragment>
-        }
+        )
     })) : <React.Fragment key={'empty'}></React.Fragment>
 
     // states for new item dialog
@@ -66,16 +72,18 @@ export default function Inventory(props) {
     const [newItemOpen, setNewItemOpen] = useState(false)
     const [productName, setProductName] = useState('')
     const [date, setDate] = useState('Unknown')
+    const [displayDate, setDisplayDate] = useState('')
     const [price, setPrice] = useState('')
     const [quantity, setQuantity] = useState('')
     const [productNameError, setProductNameError] = useState(false)
     const [priceError, setPriceError] = useState(false)
     const [quantityError, setQuantityError] = useState(false)
-    
-    
+    const [buttonText, setButtonText] = useState("Add")
+
     // states for sold dialog
     const [soldOpen, setSoldOpen] = useState(false)
-    const [itemBeingSold, setItemBeingSold] = useState(Array(5))
+    const [itemBeingSold, setItemBeingSold] = useState(new InventoryItem())
+    const [itemNumberBeingSold, setItemNumberBeingSold] = useState(0)
     const [salePrice, setSalePrice] = useState('')
     const [quantitySold, setQuantitySold] = useState('')
     const [totalPayout, setTotalPayout] = useState('')
@@ -85,13 +93,19 @@ export default function Inventory(props) {
     const [totalPayoutError, setTotalPayoutError] = useState(false)
     const [costToShipError, setCostToShipError] = useState(false)
 
-    // function for new item dialog
+    // states for edit dialog
+    const [editOpen, setEditOpen] = useState(false)
+    const [itemNumberBeingEdited, setItemNumberBeingEdited] = useState(0)
 
+    // function for new item dialog
     function handleOpenAddNewItemDialog() {
+        setButtonText("Add")
         setNewItemOpen(true)
     }
 
     function handleCloseAddNewItemDialog() {
+        setNewItemOpen(false)
+        setEditOpen(false)
         setProductName('')
         setDate('Unknown')
         setPrice('')
@@ -99,13 +113,13 @@ export default function Inventory(props) {
         setProductNameError(false)
         setPriceError(false)
         setQuantityError(false)
-        setNewItemOpen(false)
+        setDisplayDate('')
     }
 
     function handleProductNameChange(event) {
         setProductName(event.target.value)
     }
-    
+
 
     function handlePriceChange(event) {
         setPrice(event.target.value)
@@ -132,7 +146,8 @@ export default function Inventory(props) {
         if (errored) {
             return
         } else {
-            props.addNewInventory(true, date, productName, price, quantity)
+            props.addNewInventory(date, productName, parseFloat(price), parseInt(quantity))
+            handleCloseAddNewItemDialog()
         }
     }
 
@@ -146,14 +161,15 @@ export default function Inventory(props) {
             setDate('Unknown')
             return
         }
-        
         setDate(revisedDate)
+        setDisplayDate(reverseDate(revisedDate))
     }
 
     // functions regarding sold dialog
 
-    function handleOpenSoldDialog(product) {
-        setItemBeingSold(product)
+    function handleOpenSoldDialog(item, itemNumber) {
+        setItemBeingSold(item)
+        setItemNumberBeingSold(itemNumber)
         setSoldOpen(true)
     }
 
@@ -166,7 +182,8 @@ export default function Inventory(props) {
         setQuantitySoldError(false)
         setTotalPayoutError(false)
         setCostToShipError(false)
-        setItemBeingSold(Array(5))
+        setItemBeingSold(new InventoryItem())
+        setItemNumberBeingSold(0)
         setSoldOpen(false)
     }
 
@@ -196,7 +213,7 @@ export default function Inventory(props) {
         if (quantitySold === '') {
             setQuantitySoldError(true)
             errored = true
-        } else if (parseInt(quantitySold) <= 0 || parseInt(quantitySold) > parseInt(itemBeingSold[4])) {
+        } else if (parseInt(quantitySold) <= 0 || parseInt(quantitySold) > itemBeingSold.quantity) {
             setQuantitySoldError(true)
             errored = true
         }
@@ -214,231 +231,262 @@ export default function Inventory(props) {
         if (errored) {
             return
         } else {
-            props.selling(parseInt(itemBeingSold[0]), salePrice, totalPayout, quantitySold, date, costToShip)
+            props.selling(itemNumberBeingSold, date, salePrice, totalPayout, costToShip, quantitySold);
+            handleCloseSoldDialog()
         }
-        
+
+    }
+
+    // functions for editing dialog
+
+    function handleOpenEditDialog(item, itemNumber) {
+        setItemNumberBeingEdited(itemNumber)
+        setDate(item.date)
+        setDisplayDate(reverseDate(item.date))
+        setProductName(item.name)
+        setPrice(item.price)
+        setQuantity(item.quantity)
+        setButtonText("Confirm")
+        setEditOpen(true)
+    }
+
+    function reverseDate(date) {
+        if (date === 'Unknown') {
+            return ''
+        }
+
+        let stringDate = date.split('/')
+        let revisedDate = stringDate[2] + '-' + stringDate[0] + '-' + stringDate[1]
+        return revisedDate
+    }
+
+    async function edit() {
+        await props.removeInventory(itemNumberBeingEdited)
+        props.addNewInventory(date, productName, price, quantity)
+        handleCloseAddNewItemDialog()
     }
 
     return (
         <div >
             {/* This is the table for users to see their inventory */}
             <ContentTable header={headerRow} body={bodyRows} />
-            <Dialog 
-                open={newItemOpen}
+            <Dialog
+                open={newItemOpen || editOpen}
                 close={handleCloseAddNewItemDialog}
                 maxSize='md'
                 header='Add a new item'
                 body={<form className={classes.root} autoComplete='off'>
-                <Grid container spacing={3} >
-                    <Grid item xs={4} sm={3} md={2}>
-                        <Typography variant='body1'>
-                            Product Name*:
-                        </Typography>
+                    <Grid container spacing={3} >
+                        <Grid item xs={4} sm={3} md={2}>
+                            <Typography variant='body1'>
+                                Product Name*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={8} sm={9} md={10}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='text'
+                                className={classes.textField}
+                                fullWidth
+                                onChange={handleProductNameChange}
+                                error={productNameError}
+                                value={productName}
+                            />
+                        </Grid>
+                        <Grid item xs={4} sm={3} md={2}>
+                            <Typography variant='body1'>
+                                Purchased Date:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={8} sm={9} md={3}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='date'
+                                className={classes.textField}
+                                onChange={handleDateChange}
+                                value={displayDate}
+                            />
+                        </Grid>
+                        <Grid item xs={2} sm={1} md={1}>
+                            <Typography variant='body1'>
+                                Price*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={4} sm={5} md={2}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='number'
+                                className={classes.textField}
+                                onChange={handlePriceChange}
+                                error={priceError}
+                                value={price}
+                            />
+                        </Grid>
+                        <Grid item xs={3} sm={2} md={1}>
+                            <Typography variant='body1'>
+                                Quantity*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={3} sm={4} md={2}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='number'
+                                className={classes.textField}
+                                onChange={handleQuantityChange}
+                                error={quantityError}
+                                value={quantity}
+                            />
+                        </Grid>
+                        <Grid item xs={8} sm={8} md={9}>
+                        </Grid>
+                        <Grid item xs={2} sm={2} md={2}>
+                            {newItemOpen ?
+                            <Button variant='success' onClick={() => addNewItem()}>
+                                {buttonText}
+                            </Button> 
+                            :
+                            <Button variant='success' onClick={() => edit()}>
+                                {buttonText}
+                            </Button> }
+                        </Grid>
+                        <Grid item xs={2} sm={2} md={1}>
+                            <Button variant='danger' onClick={() => handleCloseAddNewItemDialog()}>
+                                Close
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={8} sm={9} md={10}>
-                        <TextField
-                            variant='outlined'
-                            size='small'
-                            type='text'
-                            className={classes.textField}
-                            fullWidth
-                            onChange={handleProductNameChange}
-                            error={productNameError}
-                        />
-                    </Grid>
-                    <Grid item xs={4} sm={3} md={2}>
-                        <Typography variant='body1'>
-                            Purchased Date:
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={8} sm={9} md={3}>
-                        <TextField
-                            variant='outlined'
-                            size='small'
-                            type='date'
-                            className={classes.textField}
-                            onChange={handleDateChange}
-                        />
-                    </Grid>
-                    <Grid item xs={2} sm={1} md={1}>
-                        <Typography variant='body1'>
-                            Price*:
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={4} sm={5} md={2}>
-                        <TextField
-                            variant='outlined'
-                            size='small'
-                            type='number'
-                            className={classes.textField}
-                            onChange={handlePriceChange}
-                            error={priceError}
-                        />
-                    </Grid>
-                    <Grid item xs={3} sm={2} md={1}>
-                        <Typography variant='body1'>
-                            Quantity*:
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={3} sm={4} md={2}>
-                        <TextField
-                            variant='outlined'
-                            size='small'
-                            type='number'
-                            className={classes.textField}
-                            onChange={handleQuantityChange}
-                            error={quantityError}
-                        />
-                    </Grid>
-                    {/* <Grid item sm={4}>
-                        Listing yes no?
-                    </Grid>
-                    <Grid item sm={8}>
-
-                    </Grid> */}
-                    <Grid item xs={8} sm={8} md={10}>
-                    </Grid>
-                    <Grid item xs={2} sm={2} md={1}>
-                        <Button variant='success' onClick={addNewItem}>
-                            Add
-                        </Button>
-                    </Grid>
-                    <Grid item xs={2} sm={2} md={1}>
-                        <Button variant='danger' onClick={handleCloseAddNewItemDialog}>
-                            Close
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form>}/>
+                </form>} />
             <Dialog
                 open={soldOpen}
                 close={handleCloseSoldDialog}
-                maxSize ='md'
-                header = {`You sold ${itemBeingSold[2]}`}
-                body = {<form className={classes.root} autoComplete='off'>
+                maxSize='md'
+                header={`You sold ${itemBeingSold.name}`}
+                body={<form className={classes.root} autoComplete='off'>
                     <Grid container spacing={3}>
-                            <Grid item xs={12} sm={12} md={12}>
-                                <Typography variant='h5'>Item Info:</Typography>
-                            </Grid>
-                            <Grid item xs={5} sm={3} md={2}>
-                                <Typography variant='body1' >Product Name: </Typography>
-                            </Grid>
-                            <Grid item xs={7} sm={9} md={10}>
-                                <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold[2]}</Typography>
-                            </Grid>
-                            <Grid item xs={5} sm={3} md={2}>
-                                <Typography variant='body1'>Purchased Date: </Typography>
-                            </Grid>
-                            <Grid item xs={7} sm={2} md={2}>
-                                <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold[1]}</Typography>
-                            </Grid>
-                            <Grid item xs={4} sm={2} md={2}>
-                                <Typography variant='body1'>Price Paid: </Typography>
-                            </Grid>
-                            <Grid item xs={8} sm={1} md={1}>
-                                <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold[3]}</Typography>
-                            </Grid>
-                            <Grid item xs={3} sm={2} md={2}>
-                                <Typography variant='body1'>Quantity: </Typography>
-                            </Grid>
-                            <Grid item xs={9} sm={1} md={3}>
-                                <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold[4]}</Typography>
-                            </Grid>
-
-                            <Grid item xs={5} sm={3} md={2}>
-                                <Typography variant='body1'>
-                                    Total Sale Price*:
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={7} sm={3} md={2}>
-
-                                <TextField
-                                    variant='outlined'
-                                    size='small'
-                                    type='number'
-                                    className={classes.textField}
-                                    onChange={handleSalePriceChange}
-                                    error={salePriceError}
-                                />
-                            </Grid>
-                            <Grid item xs={5} sm={2} md={2}>
-                                <Typography variant='body1'>
-                                    Total Payout*:
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={6} sm={3} md={2}>
-                                <TextField
-                                    variant='outlined'
-                                    size='small'
-                                    type='number'
-                                    className={classes.textField}
-                                    onChange={handleTotalPayoutChange}
-                                    error={totalPayoutError}
-                                />
-                            </Grid>
-                            <Grid item xs={1} sm={1} md={4}>
-                            </Grid>
-                            <Grid item xs={5} sm={3} md={2}>
-                                <Typography variant='body1'>
-                                    Quantity Sold*:
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={7} sm={3} md={4}>
-                                <TextField
-                                    variant='outlined'
-                                    size='small'
-                                    type='number'
-                                    className={classes.textField}
-                                    onChange={handleQuantitySoldChange}
-                                    error={quantitySoldError}
-                                    helperText='Must be greater than 0 and less than quantity'
-                                />
-                            </Grid>
-                            <Grid item xs={5} sm={2} md={2}>
-                                <Typography variant='body1'>
-                                    Sold Date*:
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={7} sm={4} md={3}>
-                                <TextField
-                                    variant='outlined'
-                                    size='small'
-                                    type='date'
-                                    className={classes.textField}
-                                    onChange={handleDateChange}
-                                />
-                            </Grid>
-                            <Grid item xs={5} sm={3} md={2}>
-                                <Typography variant='body1'>
-                                    Cost To Ship*:
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={7} sm={3} md={2}>
-                                <TextField
-                                    variant='outlined'
-                                    size='small'
-                                    type='number'
-                                    className={classes.textField}
-                                    onChange={handleCostToShipChange}
-                                    error={costToShipError}
-                                />
-                            </Grid>
-
-                            <Grid item xs={7} sm={8} md={8}>
-                            </Grid>
-                            <Grid item xs={3} sm={2} md={2}>
-                                <Button variant='success' onClick={sold} >
-                                    Submit
-                                </Button>
-                            </Grid>
-                            <Grid item xs={2} sm={2} md={2}>
-                                <Button variant='danger' onClick={handleCloseSoldDialog}>
-                                    Close
-                                </Button>
-                            </Grid>
+                        <Grid item xs={5} sm={3} md={2}>
+                            <Typography variant='body1' >Product Name: </Typography>
                         </Grid>
+                        <Grid item xs={7} sm={9} md={10}>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold.name}</Typography>
+                        </Grid>
+                        <Grid item xs={5} sm={3} md={2}>
+                            <Typography variant='body1'>Purchased Date: </Typography>
+                        </Grid>
+                        <Grid item xs={7} sm={2} md={2}>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold.date}</Typography>
+                        </Grid>
+                        <Grid item xs={4} sm={2} md={2}>
+                            <Typography variant='body1'>Price Paid: </Typography>
+                        </Grid>
+                        <Grid item xs={8} sm={1} md={1}>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold.price}</Typography>
+                        </Grid>
+                        <Grid item xs={3} sm={2} md={2}>
+                            <Typography variant='body1'>Quantity: </Typography>
+                        </Grid>
+                        <Grid item xs={9} sm={1} md={3}>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{itemBeingSold.quantity}</Typography>
+                        </Grid>
+
+                        <Grid item xs={5} sm={3} md={2}>
+                            <Typography variant='body1'>
+                                Total Sale Price*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={7} sm={3} md={2}>
+
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='number'
+                                className={classes.textField}
+                                onChange={handleSalePriceChange}
+                                error={salePriceError}
+                            />
+                        </Grid>
+                        <Grid item xs={5} sm={2} md={2}>
+                            <Typography variant='body1'>
+                                Total Payout*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={3} md={2}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='number'
+                                className={classes.textField}
+                                onChange={handleTotalPayoutChange}
+                                error={totalPayoutError}
+                            />
+                        </Grid>
+                        <Grid item xs={1} sm={1} md={4}>
+                        </Grid>
+                        <Grid item xs={5} sm={3} md={2}>
+                            <Typography variant='body1'>
+                                Quantity Sold*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={7} sm={3} md={4}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='number'
+                                className={classes.textField}
+                                onChange={handleQuantitySoldChange}
+                                error={quantitySoldError}
+                                helperText='Must be greater than 0 and less than quantity'
+                            />
+                        </Grid>
+                        <Grid item xs={5} sm={2} md={2}>
+                            <Typography variant='body1'>
+                                Sold Date*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={7} sm={4} md={4}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='date'
+                                className={classes.textField}
+                                onChange={handleDateChange}
+                            />
+                        </Grid>
+                        <Grid item xs={5} sm={3} md={2}>
+                            <Typography variant='body1'>
+                                Cost To Ship*:
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={7} sm={3} md={10}>
+                            <TextField
+                                variant='outlined'
+                                size='small'
+                                type='number'
+                                className={classes.textField}
+                                onChange={handleCostToShipChange}
+                                error={costToShipError}
+                            />
+                        </Grid>
+
+                        <Grid item xs={7} sm={8} md={8}>
+                        </Grid>
+                        <Grid item xs={3} sm={2} md={2}>
+                            <Button variant='success' onClick={sold} >
+                                Submit
+                            </Button>
+                        </Grid>
+                        <Grid item xs={2} sm={2} md={2}>
+                            <Button variant='danger' onClick={handleCloseSoldDialog}>
+                                Close
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </form>}
             />
+
         </div>
 
     )

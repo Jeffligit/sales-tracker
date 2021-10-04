@@ -48,15 +48,15 @@ export default function SalesInfo(props) {
             var uniqueItems = 0;
             var salesTotal = 0;
             var profitTotal = 0;
-            for (let i = 1; i < expenses.length; i++) {
-                if ((expenses[i][1]).split('/')[2] === year) {
-                    expenseTotal += parseFloat(expenses[i][3]) * parseInt(expenses[i][4])
+            for (let i = 0; i < expenses.length; i++) {
+                if ((expenses[i].date).split('/')[2] === year) {
+                    expenseTotal += parseFloat(expenses[i].price) * parseInt(expenses[i].quantity)
                 }
             }
-            for (let i = 1; i < sales.length; i++) {
-                if ((sales[i][1]).split('/')[2] === year) {
-                    salesTotal += parseFloat(sales[i][4])
-                    profitTotal += parseFloat(sales[i][7])
+            for (let i = 0; i < sales.length; i++) {
+                if ((sales[i].date).split('/')[2] === year) {
+                    salesTotal += parseFloat(sales[i].salePrice)
+                    profitTotal += parseFloat(sales[i].profit)
                     uniqueItems += 1;
                 }
             }
