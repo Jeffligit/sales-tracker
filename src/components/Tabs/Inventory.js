@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import AddBtn from '../AddBtn'
+import AddBtn from '../General/AddBtn'
 import '../../App.css'
 import ContentTable from './ContentTable'
 import {
@@ -7,11 +7,10 @@ import {
     TextField,
     Grid,
     Typography,
-    IconButton
 } from '@material-ui/core'
 import Button from 'react-bootstrap/esm/Button'
-import Dialog from '../Dialog'
-import { BiEdit } from "react-icons/bi";
+import Dialog from '../General/Dialog'
+import EditButton from '../General/EditButton'
 
 
 const useStyle = makeStyles((theme) => ({
@@ -21,10 +20,6 @@ const useStyle = makeStyles((theme) => ({
     textField: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
-    },
-    appbar: {
-        background: 'linear-gradient(0.25turn, #b5b4e5, #f9dada)',
-        marginBottom: '50px',
     },
     title: {
         flexGrow: 1,
@@ -58,9 +53,7 @@ export default function Inventory(props) {
                     <Button variant='success' onClick={() => handleOpenSoldDialog(item, i+1)}>
                         Sold
                     </Button>
-                    <IconButton onClick={() => handleOpenEditDialog(item, i+1)}>
-                        <BiEdit/>
-                    </IconButton>
+                    <EditButton onClick={() => handleOpenEditDialog(item, i+1)}/>
                 </td>
             </tr>
         )
@@ -116,6 +109,7 @@ export default function Inventory(props) {
         setPriceError(false)
         setQuantityError(false)
         setDisplayDate('')
+        setEditingProductName('')
     }
 
     function handleProductNameChange(event) {
@@ -289,8 +283,26 @@ export default function Inventory(props) {
     }
 
     async function edit() {
-        props.editInventory(itemNumberBeingEdited, date, productName, price, quantity)
-        handleCloseAddNewItemDialog()
+        let errored = false
+        if (productName === '') {
+            setProductNameError(true)
+            errored = true
+        }
+        if (price === '') {
+            setPriceError(true)
+            errored = true
+        }
+        if (quantity === '') {
+            setQuantityError(true)
+            errored = true
+        }
+        if (errored) {
+            return
+        } else {
+            props.editInventory(itemNumberBeingEdited, date, productName, quantity, price)
+            handleCloseAddNewItemDialog()
+        }
+
     }
 
     return (
@@ -378,7 +390,8 @@ export default function Inventory(props) {
                             :
                             <Button variant='success' onClick={() => edit()}>
                                 {buttonText}
-                            </Button> }
+                            </Button> 
+                            }
                         </Grid>
                         <Grid item xs={2} sm={2} md={1}>
                             <Button variant='danger' onClick={() => handleCloseAddNewItemDialog()}>
@@ -406,18 +419,19 @@ export default function Inventory(props) {
                         <Grid item xs={7} sm={2} md={2}>
                             <Typography variant='body1' style={{ fontWeight: 600 }}>{date}</Typography>
                         </Grid>
-                        <Grid item xs={4} sm={2} md={2}>
-                            <Typography variant='body1'>Price Paid: </Typography>
-                        </Grid>
-                        <Grid item xs={8} sm={1} md={1}>
-                            <Typography variant='body1' style={{ fontWeight: 600 }}>{price}</Typography>
-                        </Grid>
                         <Grid item xs={3} sm={2} md={2}>
                             <Typography variant='body1'>Quantity: </Typography>
                         </Grid>
                         <Grid item xs={9} sm={1} md={3}>
                             <Typography variant='body1' style={{ fontWeight: 600 }}>{quantity}</Typography>
                         </Grid>
+                        <Grid item xs={4} sm={2} md={2}>
+                            <Typography variant='body1'>Price Per Quanitty: </Typography>
+                        </Grid>
+                        <Grid item xs={8} sm={1} md={1}>
+                            <Typography variant='body1' style={{ fontWeight: 600 }}>{price}</Typography>
+                        </Grid>
+                        
 
                         <Grid item xs={5} sm={3} md={2}>
                             <Typography variant='body1'>

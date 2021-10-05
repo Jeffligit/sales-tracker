@@ -4,8 +4,8 @@ import Tab from 'react-bootstrap/Tab'
 import Inventory from './components/Tabs/Inventory'
 import Sales from './components/Tabs/Sales'
 import Expense from './components/Tabs/Expense'
-import TopBar from './components/TopBar'
-import Dialog from './components/Dialog'
+import TopBar from './components/General/TopBar'
+import Dialog from './components/General/Dialog'
 import InventorySalesExpenseInfo from './components/InfoSection/InventorySalesExpenseInfo'
 import InventoryItem from './classes/InventoryItem.js'
 import ExpenseItem from './classes/ExpenseItem.js'
@@ -197,6 +197,12 @@ export default function Main() {
         setExpenses(removeItemFromList(itemNumber, expenses));
     }
 
+    function editExpenseProduct(itemNumber, date, name, quantity, price) {
+        let newItem = new ExpenseItem(date, name, quantity, price);
+        let newList = removeItemFromList(itemNumber, expenses);
+        setExpenses(addItemToOldList(newItem, newList));
+    }
+
     // SALES FUNCTIONS
 
     function addSalesItem(itemNumber, date, salePrice, payout, costToShip, quantitySold) {
@@ -227,6 +233,17 @@ export default function Main() {
         let total = profitTotal - sales[itemNumber - 1].profit;
         setProfitTotal(total);
         setSales(removeItemFromList(itemNumber, sales));
+    }
+
+    function editSalesItem(itemNumber, date, salePrice, payout, costToShip) {
+        let oldItem = sales[itemNumber - 1]
+        let total = profitTotal - (oldItem.payout - oldItem.costToShip - (oldItem.quantitySold * oldItem.price));
+        let profit = payout - costToShip - (oldItem.quantitySold * oldItem.pricePerQuantity);
+        let newList = removeItemFromList(itemNumber, sales);
+        var newSaleItem = new SalesItem(date, oldItem.name, oldItem.purchasedDate, oldItem.quantitySold, oldItem.pricePerQuantity, salePrice, payout, costToShip, profit.toFixed(2));
+        setSales(addItemToOldList(newSaleItem, newList));
+        total += profit;
+        setProfitTotal(total.toFixed(2));
     }
 
     
@@ -359,9 +376,11 @@ export default function Main() {
                     title='Sales'
                 >
                     <Sales
+                        salesHeader={salesHeader}
                         currSales={sales}
                         removeSale={removeSalesItem}
-                        salesHeader={salesHeader}
+                        editSale={editSalesItem}
+                        
                     />
                 </Tab>
                 <Tab
@@ -372,6 +391,7 @@ export default function Main() {
                         currExpense={expenses}
                         removeExpense={removeExpenseProduct}
                         addNewExpense={addExpenseProduct}
+                        editExpense={editExpenseProduct}
                         expensesHeader={expensesHeader}
                     />
                 </Tab>
