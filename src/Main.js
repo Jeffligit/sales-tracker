@@ -318,7 +318,7 @@ export default function Main() {
                 }
 
                 if (items[4] !== '') {
-                    newSales.push(new SalesItem(items[4], items[5], items[6], items[7], items[8], items[9], items[10]));
+                    newSales.push(new SalesItem(items[4], items[5], items[6], items[7], items[8], items[9], items[10], items[11], items[12]));
                 }
 
                 if (items[13] !== '') {
