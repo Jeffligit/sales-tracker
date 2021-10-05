@@ -7,6 +7,7 @@ import {
     TextField,
     Grid,
     Typography,
+    Tooltip
 } from '@material-ui/core'
 import Button from 'react-bootstrap/esm/Button'
 import Dialog from '../General/Dialog'
@@ -40,20 +41,20 @@ export default function Inventory(props) {
 
     const bodyRows = props.currInventory !== null && props.currInventory !== undefined ? (props.currInventory.map((item, i) => {
         return (
-            <tr key={'tr-item' + (i+1)} >
-                <td>{i+1}</td>
+            <tr key={'tr-item' + (i + 1)} >
+                <td>{i + 1}</td>
                 <td>{item.date}</td>
                 <td>{item.name}</td>
                 <td>{item.quantity}</td>
                 <td>{item.price}</td>
-                <td key={'td-button' + (i+1)}>
-                    <Button variant='danger' onClick={() => {props.removeInventory(i+1)}} className={classes.itemBtns}>
+                <td key={'td-button' + (i + 1)}>
+                    <Button variant='danger' onClick={() => { props.removeInventory(i + 1) }} className={classes.itemBtns}>
                         Remove
                     </Button>
-                    <Button variant='success' onClick={() => handleOpenSoldDialog(item, i+1)}>
+                    <Button variant='success' onClick={() => handleOpenSoldDialog(item, i + 1)}>
                         Sold
                     </Button>
-                    <EditButton onClick={() => handleOpenEditDialog(item, i+1)}/>
+                    <EditButton onClick={() => handleOpenEditDialog(item, i + 1)} />
                 </td>
             </tr>
         )
@@ -85,7 +86,7 @@ export default function Inventory(props) {
     const [totalPayoutError, setTotalPayoutError] = useState(false)
     const [costToShipError, setCostToShipError] = useState(false)
     const [soldDateError, setSoldDateError] = useState(false)
-    
+
 
     // states for edit dialog
     const [editOpen, setEditOpen] = useState(false)
@@ -194,7 +195,7 @@ export default function Inventory(props) {
         setTotalPayout('')
         setCostToShip('')
         setSoldDate('')
-        
+
         setSalePriceError(false)
         setQuantitySoldError(false)
         setTotalPayoutError(false)
@@ -313,7 +314,7 @@ export default function Inventory(props) {
                 open={newItemOpen || editOpen}
                 close={handleCloseAddNewItemDialog}
                 maxSize='md'
-                header={newItemOpen ? 'Add a new item' : `Editing item: ${editingProductName}` }
+                header={newItemOpen ? 'Add a new item' : `Editing item: ${editingProductName}`}
                 body={<form className={classes.root} autoComplete='off'>
                     <Grid container spacing={3} >
                         <Grid item xs={4} sm={3} md={2}>
@@ -364,12 +365,15 @@ export default function Inventory(props) {
                                 value={quantity}
                             />
                         </Grid>
-                        <Grid item xs={2} sm={1} md={1}>
-                            <Typography variant='body1'>
-                                Price*:
-                            </Typography>
+                        <Grid item xs={2} sm={2} md={1}>
+                            <Tooltip title="Per quantity" arrow>
+                                <Typography variant='body1'>
+                                    Price*:
+                                </Typography>
+                            </Tooltip>
+
                         </Grid>
-                        <Grid item xs={4} sm={5} md={2}>
+                        <Grid item xs={3} sm={3} md={2}>
                             <TextField
                                 variant='outlined'
                                 size='small'
@@ -384,13 +388,13 @@ export default function Inventory(props) {
                         </Grid>
                         <Grid item xs={2} sm={2} md={2}>
                             {newItemOpen ?
-                            <Button variant='success' onClick={() => addNewItem()}>
-                                {buttonText}
-                            </Button> 
-                            :
-                            <Button variant='success' onClick={() => edit()}>
-                                {buttonText}
-                            </Button> 
+                                <Button variant='success' onClick={() => addNewItem()}>
+                                    {buttonText}
+                                </Button>
+                                :
+                                <Button variant='success' onClick={() => edit()}>
+                                    {buttonText}
+                                </Button>
                             }
                         </Grid>
                         <Grid item xs={2} sm={2} md={1}>
@@ -431,7 +435,7 @@ export default function Inventory(props) {
                         <Grid item xs={8} sm={1} md={1}>
                             <Typography variant='body1' style={{ fontWeight: 600 }}>{price}</Typography>
                         </Grid>
-                        
+
 
                         <Grid item xs={5} sm={3} md={2}>
                             <Typography variant='body1'>
