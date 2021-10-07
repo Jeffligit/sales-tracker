@@ -186,9 +186,9 @@ export default function Sales(props) {
         setRedoOpen(false)
     }
 
-    function redo() {
+    // function redo() {
 
-    }
+    // }
 
     return ( 
         <div>
