@@ -99,7 +99,7 @@ export default function Inventory(props) {
         setNewItemOpen(true)
     }
 
-    function handleCloseAddNewItemDialog() {
+    async function handleCloseAddNewItemDialog() {
         setNewItemOpen(false)
         setEditOpen(false)
         setProductName('')
@@ -316,7 +316,7 @@ export default function Inventory(props) {
                 maxSize='md'
                 header={newItemOpen ? 'Add a new item' : `Editing item: ${editingProductName}`}
                 body={<form className={classes.root} autoComplete='off'>
-                    <Grid container spacing={3} >
+                    <Grid container spacing={2} >
                         <Grid item xs={4} sm={3} md={2}>
                             <Typography variant='body1'>
                                 Product Name*:
@@ -365,7 +365,7 @@ export default function Inventory(props) {
                                 value={quantity}
                             />
                         </Grid>
-                        <Grid item xs={2} sm={2} md={1}>
+                        <Grid item xs={2} sm={1} md={1}>
                             <Tooltip title="Per quantity" arrow>
                                 <Typography variant='body1'>
                                     Price*:
@@ -384,9 +384,9 @@ export default function Inventory(props) {
                                 value={price}
                             />
                         </Grid>
-                        <Grid item xs={8} sm={8} md={9}>
+                        <Grid item xs={7} sm={8} md={9}>
                         </Grid>
-                        <Grid item xs={2} sm={2} md={2}>
+                        <Grid item xs={3} sm={2} md={2}>
                             {newItemOpen ?
                                 <Button variant='success' onClick={() => addNewItem()}>
                                     {buttonText}
@@ -408,9 +408,9 @@ export default function Inventory(props) {
                 open={soldOpen}
                 close={handleCloseSoldDialog}
                 maxSize='md'
-                header={`You sold ${productName}`}
+                header={`You sold: ${productName}`}
                 body={<form className={classes.root} autoComplete='off'>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={2}>
                         <Grid item xs={5} sm={3} md={2}>
                             <Typography variant='body1' >Product Name: </Typography>
                         </Grid>
@@ -423,16 +423,16 @@ export default function Inventory(props) {
                         <Grid item xs={7} sm={2} md={2}>
                             <Typography variant='body1' style={{ fontWeight: 600 }}>{date}</Typography>
                         </Grid>
-                        <Grid item xs={3} sm={2} md={2}>
+                        <Grid item xs={3} sm={2} md={1}>
                             <Typography variant='body1'>Quantity: </Typography>
                         </Grid>
-                        <Grid item xs={9} sm={1} md={3}>
+                        <Grid item xs={9} sm={1} md={1}>
                             <Typography variant='body1' style={{ fontWeight: 600 }}>{quantity}</Typography>
                         </Grid>
                         <Grid item xs={4} sm={2} md={2}>
-                            <Typography variant='body1'>Price Per Quanitty: </Typography>
+                            <Typography variant='body1'>Price Per Quantity: </Typography>
                         </Grid>
-                        <Grid item xs={8} sm={1} md={1}>
+                        <Grid item xs={8} sm={1} md={3}>
                             <Typography variant='body1' style={{ fontWeight: 600 }}>{price}</Typography>
                         </Grid>
 
@@ -517,14 +517,14 @@ export default function Inventory(props) {
                             />
                         </Grid>
 
-                        <Grid item xs={7} sm={8} md={8}>
+                        <Grid item xs={7} sm={8} md={9}>
                         </Grid>
                         <Grid item xs={3} sm={2} md={2}>
                             <Button variant='success' onClick={sold} >
                                 Submit
                             </Button>
                         </Grid>
-                        <Grid item xs={2} sm={2} md={2}>
+                        <Grid item xs={2} sm={2} md={1}>
                             <Button variant='danger' onClick={handleCloseSoldDialog}>
                                 Close
                             </Button>

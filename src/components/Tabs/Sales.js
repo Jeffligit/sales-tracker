@@ -6,12 +6,13 @@ import {
     Typography,
     Grid,
     TextField,
-    Tooltip
+    Tooltip,
+    IconButton
 } from '@material-ui/core'
 import Button from 'react-bootstrap/esm/Button'
 import Dialog from '../General/Dialog'
 import EditButton from '../General/EditButton'
-
+import { FcUndo } from 'react-icons/fc'
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -56,6 +57,11 @@ export default function Sales(props) {
                         Remove
                     </Button>
                     <EditButton onClick={() => handleOpenEditDialog(item, i+1)}/>
+                    <Tooltip title="Refund / Undo">
+                        <IconButton onClick={() => handleOpenRedoDialog(item, i+1)}>
+                            <FcUndo/>
+                        </IconButton>
+                    </Tooltip>
                 </td>
             </tr>
         )
@@ -77,9 +83,10 @@ export default function Sales(props) {
     const [soldDateError, setSoldDateError] = useState(false)
     const [costToShipError, setCostToShipError] = useState(false)
     
+    const [redoOpen, setRedoOpen] = useState(false)
+
 
     function handleOpenEditDialog(item, itemNumber) {
-
         setItemBeingEdited(itemNumber)
         setProductNume(item.name)
         setPurchasedDate(item.purchasedDate)
@@ -170,6 +177,18 @@ export default function Sales(props) {
         return revisedDate
     }
 
+    function handleOpenRedoDialog(item, itemNumber) {
+        setProductNume(item.name)
+        setRedoOpen(true)
+    }
+
+    function handleCloseRedoDialog() {
+        setRedoOpen(false)
+    }
+
+    function redo() {
+
+    }
 
     return ( 
         <div>
@@ -279,20 +298,36 @@ export default function Sales(props) {
                             />
                         </Grid>
 
-                        <Grid item xs={7} sm={8} md={8}>
+                        <Grid item xs={7} sm={8} md={9}>
                         </Grid>
                         <Grid item xs={3} sm={2} md={2}>
                             <Button variant='success' onClick={edit} >
                                 Confirm
                             </Button>
                         </Grid>
-                        <Grid item xs={2} sm={2} md={2}>
+                        <Grid item xs={2} sm={2} md={1}>
                             <Button variant='danger' onClick={handleCloseEditDialog}>
                                 Close
                             </Button>
                         </Grid>
                     </Grid>
                 </form>}
+            />
+
+            <Dialog
+                open={redoOpen}
+                close={handleCloseRedoDialog}
+                maxSize='md'
+                header={`You want to refund / redo: ${productName}`}
+                body={
+                    <form className={classes.root}  autoComplete='off'>
+                        <Grid container spacing={3}>
+                            <Grid item>
+                                
+                            </Grid>
+                        </Grid>
+                    </form>
+                }
             />
         </div>
 

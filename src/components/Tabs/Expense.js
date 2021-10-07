@@ -164,13 +164,30 @@ export default function Expense(props) {
 
 
     function edit() {
-        props.editExpense(itemNumberBeingEdited, date, productName, quantity, price)
-        handleCloseAddNewItemDialog()
+        let errored = false
+        if (productName === '') {
+            setProductNameError(true)
+            errored = true
+        }
+        if (price === '') {
+            setPriceError(true)
+            errored = true
+        }
+        if (quantity === '') {
+            setQuantityError(true)
+            errored = true
+        }
+        if (errored) {
+            return
+        } else {
+            props.editExpense(itemNumberBeingEdited, date, productName, quantity, price)
+            handleCloseAddNewItemDialog()
+        }
     }
 
     return (
         <div>
-            {/* This is the table for users to see their inventory */}
+            {/* This is the table for users to see their Expense */}
             <ContentTable header={headerRow} body={bodyRows} />
             <Dialog
                 open={newItemOpen || editOpen}
@@ -178,7 +195,7 @@ export default function Expense(props) {
                 maxSize='md'
                 header={newItemOpen ? 'Add a new item' : `Editing item: ${editingProductName}` }
                 body={<form className={classes.root} autoComplete='off'>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={2}>
                         <Grid item xs={4} sm={3} md={2} >
                             <Typography variant='body1'>
                                 Product Name*:
@@ -211,12 +228,12 @@ export default function Expense(props) {
                                 value={displayDate}
                             />
                         </Grid>
-                        <Grid item md={1}>
+                        <Grid item xs={3} sm={2} md={1}>
                             <Typography variant='body1'>
                                 Quantity*:
                             </Typography>
                         </Grid>
-                        <Grid item md={2}>
+                        <Grid item xs={3} sm={4} md={2}>
                             <TextField
                                 variant='outlined'
                                 size='small'
@@ -227,12 +244,12 @@ export default function Expense(props) {
                                 value={quantity}
                             />
                         </Grid>
-                        <Grid item md={1}>
+                        <Grid item xs={2} sm={1} md={1}>
                             <Typography variant='body1'>
                                 Price*:
                             </Typography>
                         </Grid>
-                        <Grid item md={2}>
+                        <Grid item xs={3} sm={3} md={2}>
                             <TextField
                                 variant='outlined'
                                 size='small'
@@ -243,10 +260,9 @@ export default function Expense(props) {
                                 value={price}
                             />
                         </Grid>
-                        <Grid item md={10}>
-
+                        <Grid item xs={7} sm={8} md={9}>
                         </Grid>
-                        <Grid item md={1}>
+                        <Grid item xs={3} sm={2} md={2}>
                             {newItemOpen ?
                                 <Button variant='success' onClick={() => addNewItem()}>
                                     {buttonText}
@@ -257,8 +273,8 @@ export default function Expense(props) {
                                 </Button>
                             }
                         </Grid>
-                        <Grid item md={1}>
-                            <Button variant='danger' onClick={() => handleCloseAddNewItemDialog}>
+                        <Grid item xs={2} sm={2} md={1}>
+                            <Button variant='danger' onClick={() => handleCloseAddNewItemDialog()}>
                                 Close
                             </Button>
                         </Grid>
