@@ -7,7 +7,11 @@ import {
     Grid,
     TextField,
     Tooltip,
-    IconButton
+    IconButton,
+    Switch,
+    FormControl,
+    FormGroup,
+    FormControlLabel
 } from '@material-ui/core'
 import Button from 'react-bootstrap/esm/Button'
 import Dialog from '../General/Dialog'
@@ -41,8 +45,8 @@ export default function Sales(props) {
 
     const bodyRows = props.currSales !== null && props.currSales !== undefined ? (props.currSales.map((item, i) => {
         return (
-            <tr key={'tr-item'+(i+1)}>
-                <td>{i+1}</td>
+            <tr key={'tr-item' + (i + 1)}>
+                <td>{i + 1}</td>
                 <td>{item.date}</td>
                 <td>{item.name}</td>
                 <td>{item.purchasedDate}</td>
@@ -52,14 +56,14 @@ export default function Sales(props) {
                 <td>{item.payout}</td>
                 <td>{item.costToShip}</td>
                 <td>{item.profit}</td>
-                <td key={'td-button' + (i+1)}>
-                    <Button variant='danger' onClick={() => {props.removeSale(i+1)}} className={classes.itemBtns}>
+                <td key={'td-button' + (i + 1)}>
+                    <Button variant='danger' onClick={() => { props.removeSale(i + 1) }} className={classes.itemBtns}>
                         Remove
                     </Button>
-                    <EditButton onClick={() => handleOpenEditDialog(item, i+1)}/>
+                    <EditButton onClick={() => handleOpenEditDialog(item, i + 1)} />
                     <Tooltip title="Refund / Undo">
-                        <IconButton onClick={() => handleOpenRedoDialog(item, i+1)}>
-                            <FcUndo/>
+                        <IconButton onClick={() => handleOpenRedoDialog(item, i + 1)}>
+                            <FcUndo />
                         </IconButton>
                     </Tooltip>
                 </td>
@@ -82,9 +86,11 @@ export default function Sales(props) {
     const [totalPayoutError, setTotalPayoutError] = useState(false)
     const [soldDateError, setSoldDateError] = useState(false)
     const [costToShipError, setCostToShipError] = useState(false)
-    
-    const [redoOpen, setRedoOpen] = useState(false)
 
+    const [redoOpen, setRedoOpen] = useState(false)
+    const [addCostToShipToExpense, setAddCostToShipToExpense] = useState(false)
+    const [redoItemNumber, setRedoItemNumber] = useState(0)
+    const [redoItem, setRedoItem] = useState(null)
 
     function handleOpenEditDialog(item, itemNumber) {
         setItemBeingEdited(itemNumber)
@@ -178,28 +184,41 @@ export default function Sales(props) {
     }
 
     function handleOpenRedoDialog(item, itemNumber) {
+        setRedoItem(item)
+        setRedoItemNumber(itemNumber)
         setProductNume(item.name)
         setRedoOpen(true)
     }
 
     function handleCloseRedoDialog() {
+        setRedoItemNumber(0)
         setRedoOpen(false)
     }
 
-    // function redo() {
+    function handleAddCostToShipExpenseChange(event) {
+        setAddCostToShipToExpense(event.target.checked)
+    }
 
-    // }
+    function redo() {
+        // add product back into inventory
+        props.redoSale(redoItemNumber)
+        // if we need to add cost to ship to expense
+        if (addCostToShipToExpense) {
+            props.addExpense(redoItem.date, `${redoItem.name}-Cost to ship`, 1, redoItem.costToShip)
+        }
+        handleCloseRedoDialog();
+    }
 
-    return ( 
+    return (
         <div>
-            <ContentTable header={headerRow} body={bodyRows}/>
+            <ContentTable header={headerRow} body={bodyRows} />
             <Dialog
                 open={editOpen}
                 close={handleCloseEditDialog}
                 maxSize='md'
                 header={`You are editing sale for: ${productName}`}
                 body={<form className={classes.root} autoComplete='off'>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={2}>
                         <Grid item xs={5} sm={3} md={2}>
                             <Typography variant='body1' >Product Name: </Typography>
                         </Grid>
@@ -222,13 +241,13 @@ export default function Sales(props) {
                                 <Typography variant='body1' style={{ fontWeight: 600 }}>{quantitySold}</Typography>
                             </Tooltip>
                         </Grid>
-                        <Grid item xs={4} sm={2} md={3}>
+                        <Grid item xs={4} sm={2} md={2}>
                             <Typography variant='body1'>Price Per Quantity: </Typography>
                         </Grid>
                         <Grid item xs={8} sm={1} md={2}>
                             <Typography variant='body1' style={{ fontWeight: 600 }}>{price}</Typography>
                         </Grid>
-                        
+
 
                         <Grid item xs={5} sm={3} md={2}>
                             <Typography variant='body1'>
@@ -270,7 +289,7 @@ export default function Sales(props) {
                                 Sold Date*:
                             </Typography>
                         </Grid>
-                        <Grid item xs={7} sm={4} md={4}>
+                        <Grid item xs={7} sm={4} md={3}>
                             <TextField
                                 variant='outlined'
                                 size='small'
@@ -281,7 +300,7 @@ export default function Sales(props) {
                                 value={reverseDate(soldDate)}
                             />
                         </Grid>
-                        <Grid item xs={5} sm={3} md={2}>
+                        <Grid item xs={5} sm={2} md={2}>
                             <Typography variant='body1'>
                                 Cost To Ship*:
                             </Typography>
@@ -317,15 +336,38 @@ export default function Sales(props) {
             <Dialog
                 open={redoOpen}
                 close={handleCloseRedoDialog}
-                maxSize='md'
+                maxSize='sm'
                 header={`You want to refund / redo: ${productName}`}
                 body={
-                    <form className={classes.root}  autoComplete='off'>
-                        <Grid container spacing={3}>
-                            <Grid item>
-                                
+                    <form className={classes.root}>
+                        <Grid container>
+                            <Grid item sm={12} md={12}>
+                                <FormControl>
+                                    <FormGroup>
+                                        <FormControlLabel
+                                            control={
+                                                <Switch checked={addCostToShipToExpense} onChange={handleAddCostToShipExpenseChange} name="add cost to ship to expense" />
+                                            }
+                                            label="Add cost to ship to expense"
+                                        />
+                                    </FormGroup>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={7} sm={9} md={9}>
+                            </Grid>
+                            <Grid item xs={3} sm={2} md={2}>
+                                <Button variant='success' onClick={() => redo()}>
+                                    Confirm
+                                </Button>
+
+                            </Grid>
+                            <Grid item xs={2} sm={1} md={1}>
+                                <Button variant='danger' onClick={() => handleCloseRedoDialog()}>
+                                    Close
+                                </Button>
                             </Grid>
                         </Grid>
+
                     </form>
                 }
             />

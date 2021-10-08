@@ -246,6 +246,26 @@ export default function Main() {
         setProfitTotal(total.toFixed(2));
     }
 
+    function redoSalesItem(itemNumber) {
+        const sale = sales[itemNumber - 1];
+        setSales(removeItemFromList(itemNumber, sales))
+        for (let i = 0; i < inventory.length; i++) {
+            let item = inventory[i];
+            if (item.date.localeCompare(sale.purchasedDate) === 0) {
+                if (item.name.localeCompare(sale.name) === 0) {
+                    if (item.price === sale.pricePerQuantity) {
+                        let list = inventory;
+                        list[i].quantity = (parseInt(list[i].quantity) + parseInt(sale.quantitySold)).toString();
+                        setInventory(list);
+                        return
+                    }
+                }
+            }
+        }
+        const item = new InventoryItem(sale.purchasedDate, sale.name, sale.quantitySold, sale.pricePerQuantity);
+        setInventory(addItemToOldList(item, inventory));
+    }
+
     
     
 
@@ -380,7 +400,8 @@ export default function Main() {
                         currSales={sales}
                         removeSale={removeSalesItem}
                         editSale={editSalesItem}
-                        
+                        redoSale={redoSalesItem}
+                        addExpense={addExpenseProduct}
                     />
                 </Tab>
                 <Tab
