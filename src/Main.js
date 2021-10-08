@@ -10,6 +10,7 @@ import InventorySalesExpenseInfo from './components/InfoSection/InventorySalesEx
 import InventoryItem from './classes/InventoryItem.js'
 import ExpenseItem from './classes/ExpenseItem.js'
 import SalesItem from './classes/SalesItem.js'
+import BottomBar from './components/General/BottomBar'
 
 export default function Main() {
 
@@ -428,6 +429,7 @@ export default function Main() {
                     AVOID USING COMMAS IN YOUR PRODUCT NAME.
                     Will have error handling for these issues soon.</p>}>
             </Dialog>
+            <BottomBar/>
         </div>
 
     )
