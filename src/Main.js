@@ -11,6 +11,7 @@ import InventoryItem from './classes/InventoryItem.js'
 import ExpenseItem from './classes/ExpenseItem.js'
 import SalesItem from './classes/SalesItem.js'
 import BottomBar from './components/General/BottomBar'
+import './Main.css'
 
 export default function Main() {
 
@@ -267,8 +268,8 @@ export default function Main() {
         setInventory(addItemToOldList(item, inventory));
     }
 
-    
-    
+
+
 
     //LOADING AND SAVING
 
@@ -364,7 +365,7 @@ export default function Main() {
     }
 
     return (
-        <div >
+        <div id='page-container' >
             <TopBar infoOpen={handleInfoOpen} data={createDataCSV} read={readDataCSV} />
             <InventorySalesExpenseInfo
                 inventoryTotal={inventoryTotal}
@@ -374,62 +375,70 @@ export default function Main() {
                 expenses={expenses}
                 sales={sales}
             />
-            <Tabs
-                id='tabs'
-                activeKey={tab}
-                onSelect={(k) => tabSwitch(k)}
-            >
-                <Tab
-                    eventKey='inventory'
-                    title='Inventory'
+            <div id='content-wrap'>
+                <Tabs
+                    id='tabs'
+                    activeKey={tab}
+                    onSelect={(k) => tabSwitch(k)}
                 >
-                    <Inventory
-                        currInventory={inventory}
-                        removeInventory={removeInventoryProduct}
-                        addNewInventory={addInventoryProduct}
-                        selling={addSalesItem}
-                        editInventory={editInventoryProduct}
-                        inventoryHeader={inventoryHeader}
-                    />
-                </Tab>
-                <Tab
-                    eventKey='sales'
-                    title='Sales'
-                >
-                    <Sales
-                        salesHeader={salesHeader}
-                        currSales={sales}
-                        removeSale={removeSalesItem}
-                        editSale={editSalesItem}
-                        redoSale={redoSalesItem}
-                        addExpense={addExpenseProduct}
-                    />
-                </Tab>
-                <Tab
-                    eventKey='expenses'
-                    title='Expenses'
-                >
-                    <Expense
-                        currExpense={expenses}
-                        removeExpense={removeExpenseProduct}
-                        addNewExpense={addExpenseProduct}
-                        editExpense={editExpenseProduct}
-                        expensesHeader={expensesHeader}
-                    />
-                </Tab>
-            </Tabs>
-            <Dialog
-                open={openInfo}
-                close={handleInfoClose}
-                maxSize='sm'
-                header='Info'
-                body={<p>You can download the existing table as a csv.
-                    You can then upload that same csv to repopulate the table.
-                    DO NOT ALTER THE CSV AS IT WILL NOT UPLOAD PROPERLY.
-                    AVOID USING COMMAS IN YOUR PRODUCT NAME.
-                    Will have error handling for these issues soon.</p>}>
-            </Dialog>
-            <BottomBar/>
+                    <Tab
+                        eventKey='inventory'
+                        title='Inventory'
+                    >
+                        <Inventory
+                            currInventory={inventory}
+                            removeInventory={removeInventoryProduct}
+                            addNewInventory={addInventoryProduct}
+                            selling={addSalesItem}
+                            editInventory={editInventoryProduct}
+                            inventoryHeader={inventoryHeader}
+                        />
+                    </Tab>
+                    <Tab
+                        eventKey='sales'
+                        title='Sales'
+                    >
+                        <Sales
+                            salesHeader={salesHeader}
+                            currSales={sales}
+                            removeSale={removeSalesItem}
+                            editSale={editSalesItem}
+                            redoSale={redoSalesItem}
+                            addExpense={addExpenseProduct}
+                        />
+                    </Tab>
+                    <Tab
+                        eventKey='expenses'
+                        title='Expenses'
+                    >
+                        <Expense
+                            currExpense={expenses}
+                            removeExpense={removeExpenseProduct}
+                            addNewExpense={addExpenseProduct}
+                            editExpense={editExpenseProduct}
+                            expensesHeader={expensesHeader}
+                        />
+                    </Tab>
+                </Tabs>
+                <Dialog
+                    open={openInfo}
+                    close={handleInfoClose}
+                    maxSize='sm'
+                    header='Info'
+                    body={<p>You can download the existing table as a csv.
+                        You can then upload that same csv to repopulate the table.
+                        DO NOT ALTER THE CSV AS IT WILL NOT UPLOAD PROPERLY.
+                        AVOID USING COMMAS IN YOUR PRODUCT NAME.
+                        Will have error handling for these issues soon.</p>}>
+                </Dialog>
+            </div>
+
+
+
+            <footer id='footer'>
+                <BottomBar githubLink="https://github.com/Jeffligit" linkedinLink="https://www.linkedin.com/in/jeff-li-3014/"/>
+            </footer>
+
         </div>
 
     )

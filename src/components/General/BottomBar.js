@@ -13,10 +13,10 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     appbar: {
-        position: 'fixed',
+        position: 'absolute',
         background: 'linear-gradient(0.25turn, #b5b4e5, #f9dada)',
         top: 'auto',
-        bottom: '0'
+        bottom: '0',
     },
     label: {
         color: '#000000'
@@ -34,10 +34,10 @@ export default function Bottom(props) {
                     <Typography variant='body' className={classes.label}>
                         Connect with me:
                     </Typography>
-                    <IconButton href='https://github.com/Jeffligit' target='_blank'>
+                    <IconButton href={props.githubLink} target='_blank'>
                         <AiFillGithub />
                     </IconButton>
-                    <IconButton href='https://www.linkedin.com/in/jeff-li-3014/' target='_blank'>
+                    <IconButton href={props.linkedinLink} target='_blank'>
                         <AiFillLinkedin />
                     </IconButton>
                 </Toolbar>
