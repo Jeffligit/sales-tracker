@@ -92,12 +92,12 @@ export default function Main() {
             while (low !== high) {
                 let mid = Math.floor((high + low) / 2);
                 const item = oldList[mid];
-                // if new item is younger look at low -> mid - 1
+                // if new item is younger look at low -> mid
                 if (newItem.compareDateTo(item) === 1) {
                     if (mid === 0) {
                         high = 0;
                     } else {
-                        high = mid - 1;
+                        high = mid;
                     }
                 } else {
                     // new item is older look at mid + 1 -> high
@@ -335,15 +335,15 @@ export default function Main() {
             for (let i = 1; i < rows.length; i++) {
                 // get items from each row separated by comma
                 let items = rows[i].split(',');
-                if (items[0] !== '') {
+                if (items[0] !== '' && items[0] !== undefined) {
                     newInventory.push(new InventoryItem(items[0], items[1], items[2], items[3]));
                 }
 
-                if (items[4] !== '') {
+                if (items[4] !== '' && items[4] !== undefined) {
                     newSales.push(new SalesItem(items[4], items[5], items[6], items[7], items[8], items[9], items[10], items[11], items[12]));
                 }
 
-                if (items[13] !== '') {
+                if (items[13] !== '' && items[13] !== undefined) {
                     newExpenses.push(new ExpenseItem(items[13], items[14], items[15], items[16]));
                 }
             }

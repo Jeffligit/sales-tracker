@@ -279,7 +279,22 @@ export default function Inventory(props) {
         }
 
         let stringDate = date.split('/')
-        let revisedDate = stringDate[2] + '-' + stringDate[0] + '-' + stringDate[1]
+        let year = stringDate[2]
+        let month = stringDate[0]
+        let day = stringDate[1]
+
+        while (year.length < 4) {
+            year = '0' + year
+        }
+
+        while (month.length < 2) {
+            month = '0' + month
+        }
+
+        while (day.length < 2) {
+            day = '0' + day
+        }
+        let revisedDate = year + '-' + month + '-' + day
         return revisedDate
     }
 
