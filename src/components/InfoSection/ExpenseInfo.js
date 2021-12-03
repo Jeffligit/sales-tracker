@@ -49,10 +49,14 @@ export default function ExpenseInfo(props) {
                 }
             }
             setSearchYear(year)
-            setTotalForYear(total)
+            setTotalForYear(roundToTwoDecimals(total))
             setNumOfUnqiueItems(uniqueItems)
             setNumOfItems(itemQuantity)
         }
+    }
+
+    function roundToTwoDecimals(num) {
+        return Math.round((num + Number.EPSILON) * 100) / 100
     }
 
     return (

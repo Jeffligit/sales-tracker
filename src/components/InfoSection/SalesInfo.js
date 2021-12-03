@@ -49,6 +49,7 @@ export default function SalesInfo(props) {
             var salesTotal = 0;
             var profitTotal = 0;
             for (let i = 0; i < expenses.length; i++) {
+                console.log(expenses)
                 if ((expenses[i].date).split('/')[2] === year) {
                     expenseTotal += parseFloat(expenses[i].price) * parseInt(expenses[i].quantity)
                 }
@@ -62,13 +63,15 @@ export default function SalesInfo(props) {
             }
             profitTotal -= expenseTotal
             setSearchYear(year)
-            setProfitTotalForYear(profitTotal)
-            setSalesTotalForYear(salesTotal)
+            setProfitTotalForYear(roundToTwoDecimals(profitTotal))
+            setSalesTotalForYear(roundToTwoDecimals(salesTotal))
             setNumOfUnqiueItems(uniqueItems)
         }
     }
 
-
+    function roundToTwoDecimals(num) {
+        return Math.round((num + Number.EPSILON) * 100) / 100
+    }
 
     return (
         <React.Fragment>

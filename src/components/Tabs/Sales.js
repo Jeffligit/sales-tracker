@@ -115,6 +115,10 @@ export default function Sales(props) {
         setSalePrice('')
         setTotalPayout('')
         setCostToShip('')
+        setSalePriceError(false)
+        setTotalPayoutError(false)
+        setSoldDateError(false)
+        setCostToShipError(false)
         setEditOpen(false)
     }
 

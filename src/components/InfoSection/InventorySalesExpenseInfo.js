@@ -35,7 +35,7 @@ export default function InventorySalesExpenseInfo(props) {
     }, [props.inventoryTotal])
 
     useEffect(() => {
-        setProfitTitle(`Total Lifetime Profit: ${props.profitTotal}`)
+        setProfitTitle(`Total Lifetime Profit After Expenses: ${props.profitTotal}`)
     }, [props.profitTotal])
 
     useEffect(() => {

@@ -46,23 +46,28 @@ export default function Main() {
     }, [expenses])
 
     useEffect(() => {
-        let total = 0
+        let inventoryTotal = 0
+        let expenseTotal = 0
+        let profitTotal = 0
         for (let i = 0; i < inventory.length; i++) {
-            total += parseFloat(inventory[i].price) * parseInt(inventory[i].quantity)
+            inventoryTotal += parseFloat(inventory[i].price) * parseInt(inventory[i].quantity)
         }
-        setInventoryTotal(total)
-        total = 0
-        for (let i = 0; i < sales.length; i++) {
-            total += parseFloat(sales[i].profit)
-        }
-        setProfitTotal(total)
-        total = 0
+        setInventoryTotal(roundToTwoDecimals(inventoryTotal))
         for (let i = 0; i < expenses.length; i++) {
-            total += parseFloat(expenses[i].price) * parseInt(expenses[i].quantity)
+            expenseTotal += parseFloat(expenses[i].price) * parseInt(expenses[i].quantity)
         }
-        setExpenseTotal(total)
+        setExpenseTotal(roundToTwoDecimals(expenseTotal))
+        for (let i = 0; i < sales.length; i++) {
+            profitTotal += parseFloat(sales[i].profit)
+        }
+        setProfitTotal(roundToTwoDecimals(profitTotal - expenseTotal))
+        
     }, [uploaded, inventory, sales, expenses])
 
+
+    function roundToTwoDecimals(num) {
+        return Math.round((num + Number.EPSILON) * 100) / 100
+    }
 
     /*
         Description: Handle switching tabs

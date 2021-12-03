@@ -31,7 +31,7 @@ export default function Bottom(props) {
         <div className={classes.grow}>
             <AppBar className={classes.appbar}>
                 <Toolbar>
-                    <Typography variant='body' className={classes.label}>
+                    <Typography variant='body1' className={classes.label}>
                         Connect with me:
                     </Typography>
                     <IconButton href={props.githubLink} target='_blank'>

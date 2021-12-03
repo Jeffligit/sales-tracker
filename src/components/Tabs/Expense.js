@@ -103,6 +103,31 @@ export default function Expense(props) {
         setQuantity(event.target.value)
     }
 
+    function reverseDate(date) {
+        if (date === 'Unknown') {
+            return ''
+        }
+
+        let stringDate = date.split('/')
+        let year = stringDate[2]
+        let month = stringDate[0]
+        let day = stringDate[1]
+
+        while (year.length < 4) {
+            year = '0' + year
+        }
+
+        while (month.length < 2) {
+            month = '0' + month
+        }
+
+        while (day.length < 2) {
+            day = '0' + day
+        }
+        let revisedDate = year + '-' + month + '-' + day
+        return revisedDate
+    }
+
     function handleDateChange(event) {
         let stringDate = event.target.value.split('-')
 
@@ -112,8 +137,8 @@ export default function Expense(props) {
             setDate('Unknown')
             return
         }
-
         setDate(revisedDate)
+        setDisplayDate(reverseDate(revisedDate))
     }
 
     function addNewItem() {
@@ -137,16 +162,6 @@ export default function Expense(props) {
             props.addNewExpense(date, productName, parseInt(quantity), parseFloat(price));
             handleCloseAddNewItemDialog();
         }
-    }
-
-    function reverseDate(date) {
-        if (date === 'Unknown') {
-            return ''
-        }
-
-        let stringDate = date.split('/')
-        let revisedDate = stringDate[2] + '-' + stringDate[0] + '-' + stringDate[1]
-        return revisedDate
     }
 
     // edit functions
